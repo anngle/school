@@ -1,5 +1,5 @@
 *.py[cod]
-data/*
+
 # C extensions
 *.so
 
@@ -51,3 +51,4 @@ env/
 # webpack-built files
 /school/static/build/
 /school/webpack/manifest.json
+data/
