@@ -22,8 +22,8 @@
 	<input type="submit" value="提交">
 </form>
 <!-- <progress id="uploadprogress" min="0" max="100" value="0">0</progress> -->
-{%if classes.teacher%}
-	班主任：{{classes.teacher.teacher.first_name}}
+{%if classes.charge_teachers%}
+	班主任：{{classes.teacher.users.first_name}}
 {%else%}
 <hr>
 <form action="{{url_for('superadmin.set_teachers')}}" method="post">
@@ -36,9 +36,9 @@
 	{%endif%}
 	 <br>	
 	学生列表：
-	{%if classes.students%}
-	{%for i in classes.students%}
-	{{i.first_name}}
+	{%if classes.student%}
+	{%for i in classes.student%}
+	 <br>{{i.number}},{{i.name}} ,{%if i.sex%} 男{%else%}女{%endif%}
 	{%endfor%}
 	{%endif%}
 </body>

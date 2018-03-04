@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <title>public</title>
 </head>
+ <style>a{font-size: 2em;}</style>
 <body>
-{%for message in get_flashed_messages(category_filter=['success'])%}
+{%for message in get_flashed_messages()%}
         
 <div class="ui-tooltips ui-tooltips-guide">
     <div class="ui-tooltips-cnt ui-border-b">
@@ -21,8 +22,11 @@
   您未设置角色，
 <a href="{{url_for('user.set_roles')}}">点击设置角色</a>
 
-  {%else%}
-<a href="{{url_for('user.send_leave')}}">点击请假</a>
+  {%else%} <br>
+<a href="{{url_for('user.send_leave')}}">发起请假</a> <br> 
+<a href="">我的发起</a> <br>
+<a href="">我的请假</a> <br>
+<a href="">我的批准</a> <br>
 
   {%endif%}
 

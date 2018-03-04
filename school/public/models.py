@@ -18,7 +18,10 @@ class School(SurrogatePK, Model):
 	#创建时间
 	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
-	grades = relationship('Grade', backref='school',lazy='dynamic')
+	grades = relationship('Grade', backref='schools',lazy='dynamic')
+
+	user = relationship('User', backref='schools')
+
     
     
 #年级
@@ -30,15 +33,16 @@ class Grade(SurrogatePK, Model):
 
 	classes_id = relationship('Classes', backref='grade',lazy='dynamic')
 
-	schools = reference_col('schools')
+	school = reference_col('schools')
     
 
 #班级
 class Classes(SurrogatePK, Model):
 	__tablename__ = 'classesd'
 	name = Column(db.String(80), nullable=False)
-	#学生
-	students = reference_col('students')
+
+	student = relationship('Student', backref='classes')
+    
 	#班主任
 	charge_teachers = reference_col('charge_teacher')
 	#年级
@@ -48,13 +52,25 @@ class Classes(SurrogatePK, Model):
 #学生
 class Student(SurrogatePK, Model):
 	__tablename__ = 'students'
-	number = Column(db.String(80), nullable=False)
+	number = Column(db.String(80),nullable=False)
 	sex = Column(db.Boolean(), default=True) #男女
+	name = Column(db.String(80))
 
-	users = reference_col('users')
+	user = reference_col('users')
+	#家长
+	parent = reference_col('student_parents')
 
-	classes_id = relationship('Classes', backref='student',lazy='dynamic')
-    
+	#班级
+	classesd = reference_col('classesd')
+
+#学生家长表
+class StudentParent(SurrogatePK, Model):
+	__tablename__ = 'student_parents'
+
+	student = relationship('Student', backref='parents')
+
+	user = reference_col('users')
+	
 
 #教师
 class ChargeTeacher(SurrogatePK, Model):
@@ -62,7 +78,7 @@ class ChargeTeacher(SurrogatePK, Model):
 
 	number = Column(db.String(80), nullable=False)
 
-	users = reference_col('users')
+	user = reference_col('users')
 
 	classes_id = relationship('Classes', backref='teacher',lazy='dynamic')
   
@@ -73,9 +89,31 @@ class Doorkeeper(SurrogatePK, Model):
 
 	number = Column(db.String(80), nullable=False)
 
-	users = reference_col('users')
+	user = reference_col('users')
 
-
+#请假列表
+class AskLeave(SurrogatePK, Model):
+	__tablename__ = 'ask_leave'
+	#发起人
+	send_users = reference_col('users')
+	#请假人
+	ask_users = reference_col('users')
+	#批准人
+	charge_users = reference_col('users')
+	#请假开始事假
+	ask_start_time = Column(db.DateTime)
+	#请假结束时间
+	ask_end_time = Column(db.DateTime)
+	#回来时间`
+	back_leave_time = Column(db.DateTime,default=None)
+	#批准时间`
+	charge_time = Column(db.DateTime)
+	#是否批准 0发起  1批准  2拒绝 3完成
+	charge_state = Column(db.Integer,default=0)
+	#请假原因
+	why = Column(db.UnicodeText)
+	#创建时间
+	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
 
 

@@ -6,7 +6,7 @@ import time,random
 from sqlalchemy import desc
 
 from .models import User,Role,Permission
-from ..public.models import School,ChargeTeacher
+from ..public.models import *
 from ..decorators import permission_required
 
 
@@ -30,10 +30,11 @@ def set_roles():
 @login_required
 def set_roles_post():
 	school_id = request.form.get('school_id','0')
-	role_id = request.form.get('school_id','0')
+	role_id = request.form.get('role_id','0')
 	number = request.form.get('number','0')
 	verify = request.form.get('verify','0')
 	phone = request.form.get('phone','0')
+	name = request.form.get('name','')
 	school = School.query.get_or_404(school_id)
 	#教师
 	if int(role_id) ==1:
@@ -41,18 +42,75 @@ def set_roles_post():
 			flash(u'校验码错误','danger')
 			return redirect(url_for('public.home'))
 		role = Role.query.filter_by(name='Teacher').first()
-		current_user.update(phone=phone,roles=role)
-		ChargeTeacher.create(number=number,teacher=current_user)
+		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
+		ChargeTeacher.create(number=number,users=current_user)
 		flash(u'您已设置角色为“教师”。','success')
+	#学生
+	if int(role_id)==0:
+		role = Role.query.filter_by(name='Students').first()
+		student = Student.query.filter_by(number=number).filter_by(name=name).first()
+		if not student:
+			flash(u'姓名与学号不符合，请重新输入','danger')
+			return redirect(url_for('public.home'))
+		student.update(users=current_user)
+		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
+		flash(u'您已设置角色为“学生”。','success')
+	#家长
+	if int(role_id)==2:
+		role = Role.query.filter_by(name='Patriarch').first()
+		student = Student.query.filter_by(number=number).filter_by(name=name).first()
+		if not student:
+			flash(u'姓名与学号不符合，请重新输入','danger')
+			return redirect(url_for('public.home'))
+		sp = StudentParent.create(users=current_user)
+		student.update(parents=sp)
+		current_user.update(phone=phone,roles=role,schools=school,first_name=name+'的家长')
+		flash(u'您已设置角色为“%s”的家长。'%name,'success')
+	#门卫
+	if int(role_id)==3:
+		if verify != current_app.config['REGISTERVERIFY']:
+			flash(u'校验码错误','danger')
+			return redirect(url_for('public.home'))
+		role = Role.query.filter_by(name='Doorkeeper').first()
+		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
+		Doorkeeper.create(number=number,users=current_user)
+		flash(u'您已设置角色为“门口保安”。','success')
 	
 	return redirect(url_for('public.home'))
 
 
+#发起请假
 @blueprint.route('/send_leave')
 @login_required
 @permission_required(Permission.LEAVE)
 def send_leave():
 	return render_template('users/send_leave.html')
+
+
+@blueprint.route('/send_leave',methods=['POST'])
+@login_required
+@permission_required(Permission.LEAVE)
+def send_leave_post():
+	number = request.form.get('number','')
+	ask_start_time =  request.form.get('ask_start_time','')
+	ask_end_time =  request.form.get('ask_end_time','')
+	why =  request.form.get('why','')
+	student = Student.query.filter_by(number=number).first()
+	banzhuren = student.classes.teacher.users
+	if AskLeave.query.filter_by(ask_user=student.users).filter_by(charge_state=0).first():
+		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
+		return redirect(url_for('public.home'))
+	AskLeave.create(
+		send_ask_user=current_user,
+		ask_user = student.users,
+		charge_ask_user = banzhuren,
+		ask_start_time = ask_start_time,
+		ask_end_time = ask_end_time,
+		why = why
+	)
+	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
+	return redirect(url_for('public.home'))
+
 
 
 

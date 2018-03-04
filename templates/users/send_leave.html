@@ -5,6 +5,14 @@
 	<title>Document</title>
 </head>
 <body>
-	qingjia  
+	<form action="{{url_for('user.send_leave_post')}}" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+		请假人学号：<input type="text" name="number"> <br>
+		请假开始时间：<input type="text" name="ask_start_time"> <br>
+		请假结束时间：<input type="text" name="ask_end_time"> <br>
+		请假事由：<input type="text" name="why" id="">
+		<input type="submit" value="提交">
+
+	</form>  
 </body>
 </html>

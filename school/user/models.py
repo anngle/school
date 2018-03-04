@@ -79,11 +79,26 @@ class User(UserMixin, SurrogatePK, Model):
     phone = Column(db.String(80))
 
     role = reference_col('roles')
+    #学校表
+    school = reference_col('schools')
 
     #教师表 一对一
-    charge_teacher = relationship('ChargeTeacher', backref='teacher',uselist=False)
+    teacher = relationship('ChargeTeacher', backref='users',uselist=False)
     #学生表
-    students = relationship('Student', backref='student',lazy='dynamic')
+    student = relationship('Student', backref='users',lazy='dynamic')
+    #学生表家长
+    parents = relationship('StudentParent', backref='users',uselist=False)
+    #门卫
+    doorkeeper = relationship('Doorkeeper', backref='users')
+
+    #请假发起人
+    send_users = relationship('AskLeave', backref='send_ask_user',primaryjoin="User.id == AskLeave.send_users")
+    #请假人
+    ask_users = relationship('AskLeave', backref='ask_user',primaryjoin="User.id == AskLeave.ask_users")
+    #批准请假人
+    charge_users = relationship('AskLeave', backref='charge_ask_user',primaryjoin="User.id == AskLeave.charge_users")
+    
+
 
     
 

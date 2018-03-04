@@ -6,9 +6,10 @@ from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 import xlrd,sys,datetime,os
 
-from ..public.models import School,Grade,Classes
+from ..public.models import School,Grade,Classes,Student
 from ..user.models import User
 from school.utils import create_file_name,allowed_file
+from school.database import db
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -49,7 +50,7 @@ def add_grade_post():
 	name = request.form.get('name','0')
 	school =  School.query.get_or_404(school_id)
 	if name:
-		Grade.create(name=name,school=school)
+		Grade.create(name=name,schools=school)
 		flash(u'添加成功','success')
 
 	return redirect(url_for('.home'))
@@ -112,13 +113,16 @@ def show_classes(id=0):
 @blueprint.route('/set_teachers',methods=['POST'])
 def set_teachers():
 	classes_id = request.form.get('classes_id','0')
-	classes = Classes.query.get_or_404(classes_id)
+
 	phone = request.form.get('phone','')
 	user = User.query.filter_by(phone=phone).first()
 	if not user:
 		flash(u'设置班主任失败，手机号码不正确.','danger')
-		return redirect(url_for('.show_classes',id=id))
-	classes.update(charge_teacher=user.charge_teacher)
+		return redirect(url_for('.show_classes',id=classes_id))
+	
+	classes = Classes.query.get_or_404(classes_id)
+	
+	classes.update(teacher=user.charge_teacher)
 	flash(u'设置班主任成功.','success')
 	return redirect(url_for('.show_classes',id=classes_id))
 
@@ -165,11 +169,22 @@ def add_student():
 		for rownum in range(1,nrows):
 			if table.row_values(rownum):
 				table_data_list.append(table.row_values(rownum))
-		print table_data_list
+
+		classes = Classes.query.get_or_404(classes_id)
+		if table_data_list:
+			for i in table_data_list:
+				if i[2]==u'男':
+					sex = True
+				else:
+					sex = False
+				db.session.add(Student(number=i[0],name=i[1],sex=sex,classes=classes))
+			db.session.commit()
+		flash(u'添加完成')
+		return redirect(url_for('.show_classes',id=classes_id))
 	except Exception, e:
 		flash(u'excel文件读取错误：%s'%str(e))
 		return redirect(url_for('.show_classes',id=classes_id))
-	return 'ok'
+	
 
 
 
