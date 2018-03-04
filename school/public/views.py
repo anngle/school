@@ -9,7 +9,7 @@ from school.user.forms import RegisterForm
 from school.user.models import User
 from school.utils import flash_errors
 
-blueprint = Blueprint('public', __name__, static_folder='../static', template_folder='../templates')
+blueprint = Blueprint('public', __name__)
 
 
 @login_manager.user_loader

@@ -14,7 +14,7 @@ reload(sys)
 sys.setdefaultencoding("utf-8")
 
 
-blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin', static_folder='../static', template_folder='../templates')
+blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 
 
 
@@ -131,6 +131,7 @@ def add_student():
 		flash(u'请选择文件')
 		return redirect(url_for('.show_classes',id=classes_id))
 	classes = Classes.query.get_or_404(classes_id)
+
 	try:
 		filename = secure_filename(files.filename)
 		filename = create_file_name(files)
@@ -140,7 +141,6 @@ def add_student():
 			os.makedirs(current_app.config['UPLOADED_PATH']+file_dir)
 		if  allowed_file(files.filename):
 			files.save(current_app.config['UPLOADED_PATH'] +file_dir+filename)
-
 				
 		filedata = xlrd.open_workbook(current_app.config['UPLOADED_PATH'] +file_dir+filename,encoding_override='utf-8')
 		table = filedata.sheets()[0]
@@ -148,9 +148,9 @@ def add_student():
 		try:
 			if table.col(0)[0].value.strip() != u'学号':
 				message = u"第一行名称必须叫‘学号’，请返回修改"
-			if table.col(0)[0].value.strip() != u'姓名':
+			if table.col(1)[0].value.strip() != u'姓名':
 				message = u"第一行名称必须叫‘姓名’，请返回修改"
-			if table.col(0)[0].value.strip() != u'性别':
+			if table.col(2)[0].value.strip() != u'性别':
 				message = u"第一行名称必须叫‘性别’，请返回修改"
 
 			if message !="":
@@ -159,6 +159,13 @@ def add_student():
 		except Exception, e:
 			flash(u'excel文件操作错误：%s'%str(e))
 			return redirect(url_for('.show_classes',id=classes_id))
+
+		nrows = table.nrows #行数
+		table_data_list =[]
+		for rownum in range(1,nrows):
+			if table.row_values(rownum):
+				table_data_list.append(table.row_values(rownum))
+		print table_data_list
 	except Exception, e:
 		flash(u'excel文件读取错误：%s'%str(e))
 		return redirect(url_for('.show_classes',id=classes_id))

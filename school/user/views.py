@@ -10,7 +10,7 @@ from ..public.models import School,ChargeTeacher
 from ..decorators import permission_required
 
 
-blueprint = Blueprint('user', __name__, url_prefix='/users', static_folder='../static')
+blueprint = Blueprint('user', __name__, url_prefix='/users')
 
 
 @blueprint.route('/')
