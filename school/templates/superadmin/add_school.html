@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<form action="{{url_for('superadmin.add_school_post')}}" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+		学校名称：<input type="text" name="name" id=""> <br>
+		<input type="submit" value="提交">
+	</form>
+</body>
+</html>

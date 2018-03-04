@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+{%for message in get_flashed_messages()%}
+        
+<div class="ui-tooltips ui-tooltips-guide">
+    <div class="ui-tooltips-cnt ui-border-b">
+        <i></i>
+        {{message}}
+    </div>
+</div>
+{%endfor%}
+<form action="{{url_for('superadmin.add_student')}}" method="POST" enctype="multipart/form-data">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+<input type="hidden" name="classes_id" value="{{classes.id}}">
+	<input type="file" name="file" id="file">
+	<!-- <button type="button">提交</button> -->
+	<input type="submit" value="提交">
+</form>
+<!-- <progress id="uploadprogress" min="0" max="100" value="0">0</progress> -->
+{%if classes.teacher%}
+	班主任：{{classes.teacher.teacher.first_name}}
+{%else%}
+<hr>
+<form action="{{url_for('superadmin.set_teachers')}}" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+	<input type="hidden" name="classes_id" value="{{classes.id}}">
+	<input type="text" name="phone" id="" placeholder="班主任的手机号码">
+	<input type="submit" value="设置班主任">
+</form>
+ <hr>
+	{%endif%}
+	 <br>	
+	学生列表：
+	{%if classes.students%}
+	{%for i in classes.students%}
+	{{i.first_name}}
+	{%endfor%}
+	{%endif%}
+</body>
+</html>
+<!-- <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script> -->

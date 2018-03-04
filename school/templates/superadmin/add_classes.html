@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<h1>添加班级</h1>
+	<form action="{{url_for('superadmin.add_classes_post')}}" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+	<input type="hidden" name="grade_id" value="{{grade_id}}">
+		班级名称：<input type="text" name="name" id=""> <br>
+		<input type="submit" value="提交">
+		
+
+	</form>
+</body>
+</html>

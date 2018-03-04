@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """User models."""
 import datetime as dt
-
+from flask import current_app
 from flask_login import UserMixin,AnonymousUserMixin
 
 from school.database import Column, Model, SurrogatePK, db, reference_col, relationship
@@ -49,6 +49,7 @@ class Role(SurrogatePK, Model):
             'Students': (Permission.LEAVE,True), #学生
             'Doorkeeper': (Permission.LEAVE,False),#门卫
             'Patriarch': (Permission.LEAVE,False), #家长
+            'Teacher': (Permission.ALLOW_LEAVE,False), #教师
             'Principal': (0xfff, False), #校长
             'ADMIN': (0xffff, False) #管理员
         }
@@ -67,15 +68,15 @@ class User(UserMixin, SurrogatePK, Model):
 
     __tablename__ = 'users'
     username = Column(db.String(80), unique=True, nullable=False)
-    email = Column(db.String(80), unique=True, nullable=False)
     #: The hashed password
     password = Column(db.Binary(128), nullable=True)
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
     first_name = Column(db.String(30), nullable=True)
     last_name = Column(db.String(30), nullable=True)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     wechat_id = Column(db.String(80), nullable=True)
+    phone = Column(db.String(80))
 
     role = reference_col('roles')
 
@@ -86,20 +87,15 @@ class User(UserMixin, SurrogatePK, Model):
 
     
 
-    def __init__(self, username, email=None, password=None, **kwargs):
+    def __init__(self, username,password=None, **kwargs):
         """Create instance."""
-        db.Model.__init__(self, username=username, email=email, **kwargs)
+        db.Model.__init__(self, username=username, **kwargs)
         if password:
             self.set_password(password)
         else:
             self.password = None
 
-        if self.role is None:
-            if self.username == current_app.config['FLASKY_ADMIN']:
-                self.role = Role.query.filter_by(permissions=0xffff).first()
-            if self.role is None:
-                self.role = Role.query.filter_by(default=True).first()
-
+        
     def set_password(self, password):
         """Set password."""
         self.password = bcrypt.generate_password_hash(password)
@@ -118,8 +114,8 @@ class User(UserMixin, SurrogatePK, Model):
         return '<User({username!r})>'.format(username=self.username)
 
     def can(self, permissions):
-        return self.role is not None and \
-            (self.role.permissions & permissions) == permissions
+        return self.roles is not None and \
+            (self.roles.permissions & permissions) == permissions
 
 
 class AnonymousUser(AnonymousUserMixin):

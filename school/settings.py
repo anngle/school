@@ -14,8 +14,12 @@ class Config(object):
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    WEBPACK_MANIFEST_PATH = 'webpack/manifest.json'
 
+    FLASKY_ADMIN = 'admin'
+    REGISTERVERIFY = 'anaf'
+    
+    UPLOADED_PATH = 'data/uploads/'
+    ALLOWED_EXTENSIONS_FILES = set(['png', 'jpg', 'jpeg', 'gif','xls','xlsx'])
 
 class ProdConfig(Config):
     """Production configuration."""

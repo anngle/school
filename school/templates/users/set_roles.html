@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<form action="{{url_for('user.set_roles_post')}}" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+	学校 <select name="school_id" id="">
+	{%for i in school%}
+		<option value="{{i.id}}">{{i.name}}</option>
+	{%endfor%}
+	</select><br>
+	角色：
+	<select name="role_id" id="">
+		<option value="0">学生</option>
+		<option value="1">教师</option>
+		<option value="2">家长</option>
+		<option value="3">门卫</option>
+	</select> <br>
+	编号(学生填学号,家长填子女学号,教师填教师编号): <input type="text" name="number"> <br>
+	校验码(学生留空)：<input type="text" name="verify" id=""> <br>
+	手机号(学生可空)：<input type="text" name="phone" id=""> <br>	
+	<input type="submit" value="设置">
+</form>
+</body>
+</html>

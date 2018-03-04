@@ -1,33 +1,32 @@
-
-{% extends "layout.html" %}
-{% block content %}
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-
-  <h1>Welcome to school</h1>
-
-  <p>This is a starter Flask template. It includes Bootstrap 3, jQuery 2, Flask-SQLAlchemy, WTForms, and various testing utilities out of the box.</p>
-  <p><a href="https://github.com/sloria/cookiecutter-flask" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-</div><!-- /.jumbotron -->
-
-<div class="body-content">
-  <div class="row">
-    <div class="col-lg-4">
-      <h2><i class="fa fa-code"></i> Bootstrap 3</h2>
-      <p>Sleek, intuitive, and powerful mobile-first front-end framework for faster and easier web development.</p>
-      <p><a class="btn btn-default" href="http://getbootstrap.com/">Official website &raquo;</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>public</title>
+</head>
+<body>
+{%for message in get_flashed_messages(category_filter=['success'])%}
+        
+<div class="ui-tooltips ui-tooltips-guide">
+    <div class="ui-tooltips-cnt ui-border-b">
+        <i></i>
+        {{message}}
     </div>
-    <div class="col-lg-4">
-      <h2><i class="fa fa-flask"></i> SQLAlchemy</h2>
-      <p>SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives application developers the full power and flexibility of SQL.</p>
-      <p><a href="http://www.sqlalchemy.org/" class="btn btn-default">Official website &raquo;</a></p>
-   </div>
-    <div class="col-lg-4">
-      <h2><i class="fa fa-edit"></i> WTForms</h2>
-      <p>WTForms is a flexible forms validation and rendering library for python web development.</p>
-      <p><a href="http://wtforms.simplecodes.com/" class="btn btn-default">Official website &raquo;</a></p>
-    </div>
-  </div><!-- /.row -->
 </div>
-{% endblock %}
+{%endfor%}
 
+  您好 ，{{current_user.first_name}}，
+{%if current_user.roles%}({{current_user.roles}}){%endif%}
+  {%if not current_user.roles%}
+  您未设置角色，
+<a href="{{url_for('user.set_roles')}}">点击设置角色</a>
+
+  {%else%}
+<a href="{{url_for('user.send_leave')}}">点击请假</a>
+
+  {%endif%}
+
+
+  
+</body>
+</html>

@@ -14,9 +14,9 @@ class School(SurrogatePK, Model):
 	#是否活动 指是否可以添加用户
 	active = Column(db.Boolean(), default=False)
 	#是否可使用
-	static = Column(db.Boolean(), default=True)
+	state = Column(db.Boolean(), default=True)
 	#创建时间
-	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
 	grades = relationship('Grade', backref='school',lazy='dynamic')
     
@@ -26,7 +26,7 @@ class Grade(SurrogatePK, Model):
 	__tablename__ = 'grades'
 	name = Column(db.String(80), nullable=False)
 	#创建时间
-	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
 	classes_id = relationship('Classes', backref='grade',lazy='dynamic')
 
@@ -49,6 +49,7 @@ class Classes(SurrogatePK, Model):
 class Student(SurrogatePK, Model):
 	__tablename__ = 'students'
 	number = Column(db.String(80), nullable=False)
+	sex = Column(db.Boolean(), default=True) #男女
 
 	users = reference_col('users')
 
@@ -63,7 +64,7 @@ class ChargeTeacher(SurrogatePK, Model):
 
 	users = reference_col('users')
 
-	classes_id = relationship('Classes', backref='charge_teacher',lazy='dynamic')
+	classes_id = relationship('Classes', backref='teacher',lazy='dynamic')
   
 
 #门卫
