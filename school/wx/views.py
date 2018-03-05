@@ -31,19 +31,10 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
-    try:
-        msg = request.wechat_msg
-        context_str = '222'
-        reply = TextReply(content=context_str, message=msg)
+    msg = request.wechat_msg
+    reply = TextReply(content='hhhhh', message=msg)
     
 
-    except Exception, e:
-        return reply
-    
-    
-    
-    
-        
     
     return reply
 
