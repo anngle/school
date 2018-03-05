@@ -170,14 +170,14 @@ def my_senf_leave():
 @permission_required(Permission.ALLOW_LEAVE)
 def charge_ask_leave(id=0):
 	ask_leave = AskLeave.query.get_or_404(id)
-
-	if current_user != ask_leave.charge_ask_user or ask_leave!=0:
+	
+	if current_user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
 		flash(u'非法操作','danger')
 		return redirect(url_for('public.home'))
 
 	ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
 	flash(u'您已同意该请假申请','success')
-	
+
 	return redirect(url_for('user.charge_leave'))
 
 
