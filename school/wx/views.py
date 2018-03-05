@@ -31,47 +31,17 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
-    msg = request.wechat_msg
-
-    context_str = ''
-    reply = TextReply(content=context_str, message=msg)
-    
-
-    #扫描二维码关注事件
-    if msg.event == 'subscribe_scan':
-        autoregister(msg.source)
-
-        try:
-            reply = TextReply(content=context_str, message=msg)
-            #创建菜单
-            # createmenu()
-        except Exception, e:
-            pass
-    
-        
-    #关注事件
-    if msg.event == 'subscribe':
-        autoregister(msg.source)
+    try:
+        msg = request.wechat_msg
+        context_str = '222'
         reply = TextReply(content=context_str, message=msg)
-        #创建菜单
-        # createmenu()
-        
-    #取消关注事件
-    if msg.event == 'unsubscribe':
-        try:
-            pass
-        except Exception, e:
-            reply = ''
-        reply = ''
-        
-            
-    #定位事件
-    if msg.event =='location': 
-        try:
-        	pass
-        except Exception, e:
-            user = []
-        
+    
+
+    except Exception, e:
+        return reply
+    
+    
+    
     
         
     
