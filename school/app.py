@@ -2,8 +2,8 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from school import commands, public, user, superadmin,wechat
-from school.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
+from school import commands, public, user, superadmin,wx
+from school.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate, wechat
 from school.settings import ProdConfig
 
 
@@ -32,6 +32,7 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
+    wechat.init_app(app)
     return None
 
 
@@ -40,7 +41,7 @@ def register_blueprints(app):
     app.register_blueprint(public.views.blueprint)
     app.register_blueprint(user.views.blueprint)
     app.register_blueprint(superadmin.views.blueprint)
-    app.register_blueprint(wechat.views.blueprint)
+    app.register_blueprint(wx.views.blueprint)
     return None
 
 

@@ -2,8 +2,8 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
-
-blueprint = Blueprint('wechat', __name__, url_prefix='/wx')
+from school.extensions import wechat
+blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 #微信获取token
 @blueprint.route('/token',methods=['GET'])
@@ -28,7 +28,7 @@ def token_get():
 
 
 #微信调用 位置和token等其他相关
-@wechat.route('/token',methods=['POST'])
+@blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
     msg = request.wechat_msg
