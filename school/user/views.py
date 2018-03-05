@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, url_for, current_app, redirect,req
 from flask_login import login_required,login_user,current_user
 import time,random
 from sqlalchemy import desc
+from flask_wechatpy import oauth
 
 import datetime as dt
 
