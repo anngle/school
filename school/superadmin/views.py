@@ -21,6 +21,7 @@ blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 
 @blueprint.route('/')
 def home():
+	print current_app.config['WECHAT_APPID']
     return render_template('superadmin/home.html')
 
 
