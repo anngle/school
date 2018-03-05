@@ -18,7 +18,7 @@ class School(SurrogatePK, Model):
 	#创建时间
 	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
-	grades = relationship('Grade', backref='schools',lazy='dynamic')
+	grades = relationship('Grade', backref='schools',lazy='joined')
 
 	user = relationship('User', backref='schools')
 
@@ -31,7 +31,7 @@ class Grade(SurrogatePK, Model):
 	#创建时间
 	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
 
-	classes_id = relationship('Classes', backref='grade',lazy='dynamic')
+	classes_id = relationship('Classes', backref='grade')
 
 	school = reference_col('schools')
     
@@ -59,9 +59,12 @@ class Student(SurrogatePK, Model):
 	user = reference_col('users')
 	#家长
 	parent = reference_col('student_parents')
-
 	#班级
 	classesd = reference_col('classesd')
+
+	#请假人
+	ask_student = relationship('AskLeave', backref='ask_student',primaryjoin="Student.id == AskLeave.ask_users")
+    
 
 #学生家长表
 class StudentParent(SurrogatePK, Model):
@@ -97,7 +100,7 @@ class AskLeave(SurrogatePK, Model):
 	#发起人
 	send_users = reference_col('users')
 	#请假人
-	ask_users = reference_col('users')
+	ask_users = reference_col('students')
 	#批准人
 	charge_users = reference_col('users')
 	#请假开始事假

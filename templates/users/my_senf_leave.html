@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	我发起的请假: <br>
+	{%for i in askleave%}
+		<!-- 发起人：{{i.send_ask_user.first_name}}[{{i.send_ask_user.roles.name}}]， <br> -->
+		请假人:{{i.ask_student.name}}
+		{%if i.ask_student.users%}
+		[{{i.ask_student.users.roles.name}}]，
+		{%else%}
+		[学生]
+		{%endif%}
+		<br>
+		班主任:{{i.charge_ask_user.first_name}}[{{i.charge_ask_user.roles.name}}]，<br>
+		请假开始时间:{{i.ask_start_time}}，<br>
+		请假结束时间:{{i.ask_end_time}}，<br>
+		
+		请假原因:{{i.why}}，<br>
+		状态:
+		{%if i.charge_state==0%}
+		等待班主任确认
+		{%endif%}
+
+		{%if i.charge_state==1%}
+		班主任已批准,批准时间:{{i.charge_time}}，<br>
+		{%endif%}
+
+		{%if i.charge_state==2%}
+		班主任拒绝批假
+		{%endif%}
+
+		{%if i.charge_state==3%}
+		该学生已归来，归来时间：{{i.back_leave_time}}
+		{%endif%}
+		<br>
+		创建时间:{{i.created_at}}，  <br>
+	{%endfor%}
+
+
+	
+</body>
+</html>

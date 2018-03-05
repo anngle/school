@@ -17,7 +17,7 @@
 <a href="{{url_for('superadmin.add_version')}}">添加版本</a>
 	version: <br>	
 	{%for i in version%}
-	{{i.number}},{{i.title}},{{i.summery}},{{i.created_at}}<br>
+	{{i.number}},{{i.title}},{{i.summary}},{{i.context}},{{i.created_at}}<br>
 	{%endfor%}
 </body>
 </html>

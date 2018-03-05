@@ -16,17 +16,18 @@
 </div>
 {%endfor%}
 
-  您好 ，{{current_user.first_name}}，
+  您好 ，
 {%if current_user.roles%}({{current_user.roles}}){%endif%}
   {%if not current_user.roles%}
   您未设置角色，
 <a href="{{url_for('user.set_roles')}}">点击设置角色</a>
 
-  {%else%} <br>
+  {%else%}{{current_user.first_name}}， <br>
 <a href="{{url_for('user.send_leave')}}">发起请假</a> <br> 
-<a href="">我的发起</a> <br>
-<a href="">我的请假</a> <br>
-<a href="">我的批准</a> <br>
+<a href="{{url_for('user.my_leave')}}">我的请假</a> <br>
+<a href="{{url_for('user.my_senf_leave')}}">我的发起</a> <br>
+
+<a href="{{url_for('user.charge_leave')}}">我的批准</a> <br>
 
   {%endif%}
 

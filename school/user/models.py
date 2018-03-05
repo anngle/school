@@ -85,7 +85,7 @@ class User(UserMixin, SurrogatePK, Model):
     #教师表 一对一
     teacher = relationship('ChargeTeacher', backref='users',uselist=False)
     #学生表
-    student = relationship('Student', backref='users',lazy='dynamic')
+    student = relationship('Student', backref='users',uselist=False)
     #学生表家长
     parents = relationship('StudentParent', backref='users',uselist=False)
     #门卫
@@ -93,8 +93,6 @@ class User(UserMixin, SurrogatePK, Model):
 
     #请假发起人
     send_users = relationship('AskLeave', backref='send_ask_user',primaryjoin="User.id == AskLeave.send_users")
-    #请假人
-    ask_users = relationship('AskLeave', backref='ask_user',primaryjoin="User.id == AskLeave.ask_users")
     #批准请假人
     charge_users = relationship('AskLeave', backref='charge_ask_user',primaryjoin="User.id == AskLeave.charge_users")
     

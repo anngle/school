@@ -5,6 +5,8 @@ from flask_login import login_required,login_user,current_user
 import time,random
 from sqlalchemy import desc
 
+import datetime as dt
+
 from .models import User,Role,Permission
 from ..public.models import *
 from ..decorators import permission_required
@@ -95,14 +97,35 @@ def send_leave_post():
 	ask_start_time =  request.form.get('ask_start_time','')
 	ask_end_time =  request.form.get('ask_end_time','')
 	why =  request.form.get('why','')
-	student = Student.query.filter_by(number=number).first()
+	# student = Student.query.filter_by(number=number).filter(Student.classes.grade.schools==current_user.schools).first()
+	student = Student.query.filter(Student.number==number) \
+		.join(Classes,Classes.id==Student.classesd) \
+		.join(Grade,Grade.id==Classes.grades) \
+		.join(School,School.id==Grade.school) \
+		.filter(School.id==current_user.school).first()
+
 	banzhuren = student.classes.teacher.users
-	if AskLeave.query.filter_by(ask_user=student.users).filter_by(charge_state=0).first():
+
+	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1])).first():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
 		return redirect(url_for('public.home'))
+
+	student_role = Role.query.filter_by(name='Students').first()
+	if current_user.roles==student_role:
+		if current_user !=student.users:
+			flash(u'你也是学生不能帮其他同学请假的哟。','danger')
+			return redirect(url_for('public.home'))
+
+	if student_role!=current_user.roles:
+		if  student.parents:
+			patriarch_role = Role.query.filter_by(name='Patriarch').first()
+			if student.parents.users != current_user:
+				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
+				return redirect(url_for('public.home'))
+	
 	AskLeave.create(
 		send_ask_user=current_user,
-		ask_user = student.users,
+		ask_student = student,
 		charge_ask_user = banzhuren,
 		ask_start_time = ask_start_time,
 		ask_end_time = ask_end_time,
@@ -110,6 +133,52 @@ def send_leave_post():
 	)
 	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
 	return redirect(url_for('public.home'))
+
+
+#我的请假
+@blueprint.route('/my_leave')
+@login_required
+def my_leave():
+	if current_user.student:
+		askleave = AskLeave.query \
+			.join(Student,Student.id==AskLeave.ask_users) \
+			.filter(Student.user==current_user.id) \
+			.order_by('charge_state').all()
+	else:
+		askleave  = []
+	return render_template('users/my_senf_leave.html',askleave=askleave)
+
+
+@blueprint.route('/charge_leave')
+@login_required
+@permission_required(Permission.ALLOW_LEAVE)
+def charge_leave():
+	askleave = AskLeave.query.filter_by(charge_ask_user=current_user).order_by('charge_state').all()
+	return render_template('users/charge_leave.html',askleave=askleave)
+
+
+#我的发起的请假
+@blueprint.route('/my_senf_leave')
+@login_required
+def my_senf_leave():
+	askleave = AskLeave.query.filter_by(send_ask_user=current_user).order_by('charge_state').all()
+	return render_template('users/my_senf_leave.html',askleave=askleave)
+
+
+@blueprint.route('/charge_ask_leave/<int:id>')
+@login_required
+@permission_required(Permission.ALLOW_LEAVE)
+def charge_ask_leave(id=0):
+	ask_leave = AskLeave.query.get_or_404(id)
+
+	if current_user != ask_leave.charge_ask_user or ask_leave!=0:
+		flash(u'非法操作','danger')
+		return redirect(url_for('public.home'))
+
+	ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
+	flash(u'您已同意该请假申请','success')
+	
+	return redirect(url_for('user.charge_leave'))
 
 
 
