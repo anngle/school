@@ -3,7 +3,6 @@ from flask import Blueprint, render_template, url_for, current_app, redirect,req
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 from school.extensions import wechat
-from school.extensions import wechat
 
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wx')
@@ -44,7 +43,8 @@ def token_post():
         autoregister(msg.source)
         reply = TextReply(content='欢迎关注隔壁小超市.', message=msg)
         #创建菜单
-        createmenu()
+    createmenu()
+    print  wechat.menu.get()
     
     
     return reply
