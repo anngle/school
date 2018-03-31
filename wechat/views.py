@@ -71,7 +71,7 @@ def get_token():
     timestamp = request.args.get('timestamp','')
     nonce = request.args.get('nonce','')
     echostr = request.args.get('echostr','')
-    token = 'wx_get_token_1234567890acb'
+    token = current_app.config['SCHOOL_WECHAT_TOKEN']
     sortlist = [token, timestamp, nonce]
     sortlist.sort()
     sha1 = hashlib.sha1()
