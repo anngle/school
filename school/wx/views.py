@@ -99,7 +99,7 @@ def token_post():
     if msg.event == 'subscribe':
         reply = TextReply(content='欢迎关注隔壁小超市.', message=msg)
         #创建菜单
-    createmenu()
+    # createmenu()
     
     
     
