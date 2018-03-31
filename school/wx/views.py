@@ -97,7 +97,6 @@ def token_post():
 
     #关注事件
     if msg.event == 'subscribe':
-        autoregister(msg.source)
         reply = TextReply(content='欢迎关注隔壁小超市.', message=msg)
         #创建菜单
     createmenu()
