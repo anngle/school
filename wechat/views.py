@@ -1,7 +1,7 @@
 #coding=utf-8
 from flask_wechatpy import wechat_required,menu
 from wechatpy.replies import TextReply
-from flask import request
+from flask import request,current_app
 
 
 from . import wechat
