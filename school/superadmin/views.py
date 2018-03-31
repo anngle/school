@@ -153,9 +153,9 @@ def add_student():
 			if table.col(0)[0].value.strip() != u'学号':
 				message = u"第一行名称必须叫‘学号’，请返回修改"
 			if table.col(1)[0].value.strip() != u'姓名':
-				message = u"第一行名称必须叫‘姓名’，请返回修改"
+				message = u"第二行名称必须叫‘姓名’，请返回修改"
 			if table.col(2)[0].value.strip() != u'性别':
-				message = u"第一行名称必须叫‘性别’，请返回修改"
+				message = u"第三行名称必须叫‘性别’，请返回修改"
 
 			if message !="":
 				flash(message)
