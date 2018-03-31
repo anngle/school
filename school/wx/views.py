@@ -7,62 +7,6 @@ from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
-"""
-def createmenu():
-    wechat.menu.create({"button":[
-        {"type":"view","name":u"我要找货","sub_button":[
-            {
-                "type":"view",
-                "name":u"我发布的车",
-                "url":'http://car.anaf.cn/usercenter/show_order'
-            },
-            {
-                "type":"view",
-                "name":u"发布车信息",
-                "url":'http://car.anaf.cn/driver/add_post'
-            },
-            {
-                "type":"view",
-                "name":u"货物列表",
-                "url":'http://car.anaf.cn/consignor'
-            },
-            ]},\
-        {"type":"view","name":u"我要找车","sub_button":[
-        {
-                "type":"view",
-                "name":u"我发布的货",
-                "url":'http://car.anaf.cn/usercenter/show_order'
-            },
-            {
-                "type":"view",
-                "name":u"发布货信息",
-                "url":'http://car.anaf.cn/consignor/send_goods'
-            },
-            {
-                "type":"view",
-                "name":u"车辆列表",
-                "url":'http://car.anaf.cn/driver'
-            },
-            ]},\
-        {"type":"view","name":u"我的服务","sub_button":[
-        {
-                "type":"view",
-                "name":u"平台简介",
-                "url":'https://s.wcd.im/v/2efu6Z37/'
-            },
-            {
-                "type":"click",
-                "name":u"联系方式",
-                "key":'contact_us'
-            },
-            {
-                "type":"view",
-                "name":u"个人中心",
-                "url":'http://car.anaf.cn/usercenter'
-            },
-            ]},\
-        ]})
-"""
 
 
 
