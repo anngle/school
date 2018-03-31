@@ -2,12 +2,12 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
-from school.extensions import wechat
+# from school.extensions import wechat
 
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
-
+"""
 def createmenu():
     wechat.menu.create({"button":[
         {"type":"view","name":u"我要找货","sub_button":[
@@ -62,7 +62,7 @@ def createmenu():
             },
             ]},\
         ]})
-
+"""
 
 
 
