@@ -44,7 +44,12 @@ def token_post():
         reply = TextReply(content='欢迎关注隔壁小超市.', message=msg)
         #创建菜单
     createmenu()
-    print  wechat.menu.get()
+    print '0989'
+    try:
+        print wechat.menu.get()
+    except Exception, e:
+        print str(e)
+    
     
     
     return reply
