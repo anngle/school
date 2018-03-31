@@ -75,6 +75,7 @@ def get_token():
     sortlist = [token, timestamp, nonce]
     sortlist.sort()
     sha1 = hashlib.sha1()
+    print token
     map(sha1.update, sortlist)
     hashcode = sha1.hexdigest()
     try:
