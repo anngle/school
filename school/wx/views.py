@@ -14,7 +14,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"我要请假",
-                "url":url_for('user.my_leave')
+                "url":"http://school.anaf.cn/users/my_leave"
             },
             {
                 "type":"view",
