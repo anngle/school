@@ -34,8 +34,20 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
+    msg = request.wechat_msg
+    with open('/tmp/error.log', 'w') as f:
+        f.write('33')
+
+    reply  = ''
+
+     if msg.event == 'subscribe':
+        reply = TextReply(content='欢迎关注调..', message=msg)
+        #创建菜单
+        # createmenu()
+
+
     try:
-        msg = request.wechat_msg
+        
         reply = TextReply(content='hhhhh', message=msg)
         with open('/tmp/error.log', 'w') as f:
             f.write('222')
@@ -44,6 +56,8 @@ def token_post():
         with open('/tmp/error.log', 'w') as f:
             f.write('111')
         return str(e)
+
+    return reply
     
 
 
