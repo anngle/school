@@ -34,6 +34,7 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
+    print 'jinu'
     msg = request.wechat_msg
     with open('/tmp/error.log', 'w') as f:
         f.write('33')
