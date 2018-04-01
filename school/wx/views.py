@@ -32,7 +32,7 @@ def token_get():
 
 #微信调用 位置和token等其他相关
 @blueprint.route('/token',methods=['POST'])
-# @wechat_required
+@wechat_required
 def token_post():
     print 'jinru'
     # msg = request.wechat_msg
