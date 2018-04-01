@@ -43,7 +43,7 @@ def token_post():
     except Exception, e:
         with open('/tmp/error.log', 'w') as f:
             f.write('111')
-        return ''
+        return str(e)
     
 
 
