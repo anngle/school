@@ -34,10 +34,12 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
+    print 'jinru'
     msg = request.wechat_msg
     reply = TextReply(content='欢迎关注调度猿.\
            \n如果您是司机想要拉货，<a href="http://car.anaf.cn/consignor">请点击这里</a>.\
            \n如果您是货主想要找车，<a href="http://car.anaf.cn/driver">请点击这里</a>.', message=msg)
+    print  'return'
     return reply
     
 
