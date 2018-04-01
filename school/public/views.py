@@ -22,6 +22,7 @@ def load_user(user_id):
 @login_required
 def home():
     """Home page."""
+    print '1222'
     return render_template('public/home.html')
     
 
