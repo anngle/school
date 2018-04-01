@@ -71,6 +71,10 @@ def token_post():
     reply=''
     if msg.type == 'text':
         reply=TextReply(content=u'哈哈哈哈或或恍恍惚惚', message=msg)
+    try:
+        msg.event
+    except Exception, e:
+        return reply
 
     #关注事件
     if msg.event == 'subscribe':
