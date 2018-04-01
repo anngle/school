@@ -14,12 +14,12 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"我要请假",
-                "url":'http://car.anaf.cn/usercenter/show_order'
+                "url":'http://school.anaf.cn/'
             },
             {
                 "type":"view",
                 "name":u"代请假",
-                "url":'http://car.anaf.cn/driver/add_post'
+                "url":'http://school.anaf.cn/'
             },
             ]},\
         
@@ -33,7 +33,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://car.anaf.cn/usercenter'
+                "url":'http://school.anaf.cn/users'
             },
             ]},\
         ]})
