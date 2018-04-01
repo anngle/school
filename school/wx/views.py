@@ -40,7 +40,7 @@ def token_post():
 
     reply  = ''
 
-     if msg.event == 'subscribe':
+    if msg.event == 'subscribe':
         reply = TextReply(content='欢迎关注调..', message=msg)
         #创建菜单
         # createmenu()
