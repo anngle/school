@@ -31,7 +31,7 @@ def token_get():
 
 
 #微信调用 位置和token等其他相关
-@csrf.exempt
+@csrf_protect.exempt
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
