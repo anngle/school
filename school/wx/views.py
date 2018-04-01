@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, url_for, current_app, redirect,req
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 # from school.extensions import wechat
-
+from school.extensions import csrf_protect,
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
@@ -31,6 +31,7 @@ def token_get():
 
 
 #微信调用 位置和token等其他相关
+@csrf.exempt
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
