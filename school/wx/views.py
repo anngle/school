@@ -21,21 +21,8 @@ def createmenu():
                 "name":u"代请假",
                 "url":'http://school.anaf.cn/'
             },
-            ]},\
+            ]}
         
-        {"type":"view","name":u"用户服务","sub_button":[
-            
-            {
-                "type":"view",
-                "name":u"平台简介",
-                "key":'contact_us'
-            },
-            {
-                "type":"view",
-                "name":u"个人中心",
-                "url":'http://school.anaf.cn/users/'
-            },
-            ]},\
         ]})
 
 
