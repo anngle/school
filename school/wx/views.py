@@ -33,7 +33,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://school.anaf.cn/users'
+                "url":'http://school.anaf.cn/users/'
             },
             ]},\
         ]})
