@@ -19,7 +19,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"代请假",
-                "url":url_for('user.send_leave')
+                "url":"http://school.anaf.cn/users/send_leave"
             },
         ]},\
 
