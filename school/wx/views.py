@@ -5,7 +5,7 @@ from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 # from school.extensions import wechat
 
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wx')
+blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
 
 #微信获取token
@@ -34,30 +34,10 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
-    print 'jinu'
     msg = request.wechat_msg
-    with open('/tmp/error.log', 'w') as f:
-        f.write('33')
-
-    reply  = ''
-
-    if msg.event == 'subscribe':
-        reply = TextReply(content='欢迎关注调..', message=msg)
-        #创建菜单
-        # createmenu()
-
-
-    try:
-        
-        reply = TextReply(content='hhhhh', message=msg)
-        with open('/tmp/error.log', 'w') as f:
-            f.write('222')
-        return reply
-    except Exception, e:
-        with open('/tmp/error.log', 'w') as f:
-            f.write('111')
-        return str(e)
-
+    reply = TextReply(content='欢迎关注调度猿.\
+           \n如果您是司机想要拉货，<a href="http://car.anaf.cn/consignor">请点击这里</a>.\
+           \n如果您是货主想要找车，<a href="http://car.anaf.cn/driver">请点击这里</a>.', message=msg)
     return reply
     
 
