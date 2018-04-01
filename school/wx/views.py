@@ -8,8 +8,6 @@ from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 
-
-
 #微信获取token
 @blueprint.route('/token',methods=['GET'])
 @wechat_required
@@ -39,14 +37,14 @@ def token_post():
     try:
         msg = request.wechat_msg
         reply = TextReply(content='hhhhh', message=msg)
+        with open('/tmp/error.log', 'w') as f:
+            f.write('222')
         return reply
     except Exception, e:
         with open('/tmp/error.log', 'w') as f:
-            f.write(str(e))
+            f.write('111')
         return ''
     
-    
-
 
 
 
