@@ -14,12 +14,12 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"我要请假",
-                "url":'http://school.anaf.cn/'
+                "url":url_for('user.my_leave')
             },
             {
                 "type":"view",
                 "name":u"代请假",
-                "url":'http://school.anaf.cn/'
+                "url":url_for('user.send_leave')
             },
         ]},\
 
