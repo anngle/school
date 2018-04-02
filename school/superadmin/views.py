@@ -106,10 +106,8 @@ def all_users():
 			Role.name
 			)\
 		.join(Role,Role.id==User.role)\
-		.order_by(desc('id'))\
+		.order_by(desc(User.id))\
 		.all()
-	# for i in users:
-	# 	print i.wechat_id
 	return dict(users=users)
 
 
@@ -126,7 +124,7 @@ def all_students():
 			Student.classesd,\
 			)\
 		.all()
-	logger.info(u'所有学生')
+	
 	return dict(students=students)
 
 
@@ -244,5 +242,11 @@ def delete_users(id=0):
 	flash(u'删除成功。')
 	return redirect(url_for('.all_users'))
 
+
+
+@blueprint.route('/all_parent')
+@templated()
+def all_parent():
+	return dict(parent=StudentParent.query.order_by(desc('id')).all())
 
 
