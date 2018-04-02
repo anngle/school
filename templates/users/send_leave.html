@@ -1,18 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
-<body>
-	<form action="{{url_for('user.send_leave_post')}}" method="post">
-	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-		请假人学号：<input type="text" name="number"> <br>
-		请假开始时间：<input type="text" name="ask_start_time"> <br>
-		请假结束时间：<input type="text" name="ask_end_time"> <br>
-		请假事由：<input type="text" name="why" id="">
-		<input type="submit" value="提交">
+{% extends "base.html" %}
+{% block title %}主页{% endblock %}
+{% block body %}
+<nav class="navbar navbar-inverse text-center" role="navigation" >	
+        <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >设置角色</h3>       
+</nav>
 
-	</form>  
-</body>
+<form action="{{url_for('user.send_leave_post')}}" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请假人学号：</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="" name="number">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请假开始时间：</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="" name="ask_start_time">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">请假结束时间：</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="" name="ask_end_time">
+		</div>
+	</div>
+
+	<div class="form-group">
+		
+	    <label for="name" class="col-sm-2">请假事由：</label>
+	    <div class="col-sm-10">
+	    <textarea class="form-control" rows="2" name="why"></textarea>
+	    </div>
+	</div>
+
+	<div class="form-group">
+		&nbsp;
+	</div>
+
+
+	<div class="form-group">
+	<div class="col-sm-10">
+		<input type="submit" value="请假" type="button" class="btn btn-primary btn-lg btn-block">
+	</div>
+	</div>
+
+</form>
+
+{% endblock %}
+
 </html>

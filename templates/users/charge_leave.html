@@ -1,58 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
-<body>
-{%for message in get_flashed_messages(category_filter=['success'])%}
-        
-<div class="ui-tooltips ui-tooltips-guide">
-    <div class="ui-tooltips-cnt ui-border-b">
-        <i></i>
-        {{message}}
-    </div>
-</div>
-{%endfor%}
-
-	我批准的请假: <br>
-	{%for i in askleave%}
-		<!-- 发起人：{{i.send_ask_user.first_name}}[{{i.send_ask_user.roles.name}}]， <br> -->
-		请假人:{{i.ask_student.name}}
-		{%if i.ask_student.users%}
-		[{{i.ask_student.users.roles.name}}]，
-		{%else%}
-		[学生]
-		{%endif%}
-		<br>
-		班主任:{{i.charge_ask_user.first_name}}[{{i.charge_ask_user.roles.name}}]，<br>
-		请假开始时间:{{i.ask_start_time}}，<br>
-		请假结束时间:{{i.ask_end_time}}，<br>
-		
-		请假原因:{{i.why}}，<br>
-		状态:
-		{%if i.charge_state==0%}
+{% extends "base.html" %}
+{% block title %}主页{% endblock %}
+{% block body %}
+<nav class="navbar navbar-inverse text-center" role="navigation" >	
+        <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >我批准的请假</h3>       
+</nav>
+<div class="col-sm-10">
+	
+{%for i in askleave%}
+{%if i.charge_state==0%}
+<div class="panel panel-primary">
+{%endif%}
+{%if i.charge_state==1%}
+<div class="panel panel-success">
+{%endif%}
+{%if i.charge_state==2%}
+<div class="panel panel-info">
+{%endif%}
+{%if i.charge_state==3%}
+<div class="panel panel-warning">
+{%endif%}
+	<div class="panel-heading">
+		<h3 class="panel-title">
+{{i.ask_student.name}}
+{%if i.ask_student.users%}
+[{{i.ask_student.users.roles.name}}]，
+{%else%}
+[Students]
+{%endif%}
+{%if i.charge_state==0%}
 		等待确认 <a href="{{url_for('user.charge_ask_leave',id=i.id)}}">同意</a>
 		{%endif%}
 
 		{%if i.charge_state==1%}
-		班主任已批准,批准时间:{{i.charge_time}}，<br>
+		已批准<br>
 		{%endif%}
 
 		{%if i.charge_state==2%}
-		班主任拒绝批假
+		已拒绝
 		{%endif%}
 
 		{%if i.charge_state==3%}
-		该学生已归来，归来时间：{{i.back_leave_time}}
+		已归来，
 		{%endif%}
-		<br>
+
+		</h3>
+	</div>
+	<div class="panel-body">
+		{%if i.charge_state==1%}
+		批准时间:{{i.charge_time}}，<br>
+		{%endif%}
+		{%if i.charge_state==3%}
+		归来时间：{{i.back_leave_time}} <br>	
+		{%endif%}
+
+		
+		请假开始时间:{{i.ask_start_time}}，<br>
+		请假结束时间:{{i.ask_end_time}}，<br>
+		
+		请假原因:{{i.why}} <br>
+		
 		创建时间:{{i.created_at}}，  
+	</div>
+</div>
+{%endfor%}
 
-		<br> <hr>	
-	{%endfor%}
-  
 
-	
-</body>
-</html>
+
+{% endblock %}
+

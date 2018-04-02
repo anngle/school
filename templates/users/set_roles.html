@@ -1,30 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
-</head>
-<body>
-<form action="{{url_for('user.set_roles_post')}}" method="post">
+
+{% extends "base.html" %}
+{% block title %}主页{% endblock %}
+{% block body %}
+<nav class="navbar navbar-inverse text-center" role="navigation" >	
+        <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >设置角色</h3>       
+</nav>
+
+       <form action="{{url_for('user.set_roles_post')}}" method="post">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-	学校 <select name="school_id" id="">
-	{%for i in school%}
-		<option value="{{i.id}}">{{i.name}}</option>
-	{%endfor%}
-	</select><br>
-	角色：
-	<select name="role_id" id="">
-		<option value="0">学生</option>
-		<option value="1">教师</option>
-		<option value="2">家长</option>
-		<option value="3">门卫</option>
-	</select> <br>
-	姓名(家长则填小孩名字)：<input type="text" name="name" id=""> <br>	
-	编号(学生填学号,家长填子女学号,教师填教师编号): <input type="text" name="number"> <br>
-	校验码(学生留空)：<input type="text" name="verify" id=""> <br>
-	手机号(学生可空)：<input type="text" name="phone" id=""> <br>	
-	<input type="submit" value="设置">
+
+
+
+    <div class="form-group">
+		<label class="col-sm-2 control-label">学校</label>
+		<div class="col-sm-10">
+			<select class="form-control" name="school_id" >
+	        {%for i in school%}
+				<option value="{{i.id}}">{{i.name}}</option>
+			{%endfor%}
+	    	</select>
+	    </div>
+			
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">角色：</label>
+		<div class="col-sm-10">
+			<select class="form-control" name="role_id" >
+		        <option value="0">学生</option>
+				<option value="1">教师</option>
+				<option value="2">家长</option>
+				<option value="3">门卫</option>
+	    	</select>
+	    </div>
+			
+		</div>
+	</div>
+
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">姓名</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="请输入姓名，家长则填子女名字" name="name">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">编号</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="学生填学号,家长填子女学号,教师填教师编号。" name="number">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">校验码</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="学生留空" name="verify">
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label class="col-sm-2 control-label">手机号</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" 
+				   placeholder="学生可空" name="phone">
+		</div>
+	</div>
+
+	<div class="form-group">
+	<div class="col-sm-10">
+		<input type="submit" value="设置" type="button" class="btn btn-primary btn-lg btn-block">
+	</div>
+	</div>
 </form>
-</body>
-</html>
+
+{% endblock %}
+
+
+
+ 

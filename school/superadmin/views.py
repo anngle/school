@@ -7,8 +7,8 @@ from werkzeug.utils import secure_filename
 import xlrd,sys,datetime,os
 
 from ..public.models import School,Grade,Classes,Student
-from ..user.models import User
-from school.utils import create_file_name,allowed_file
+from ..user.models import User,Role
+from school.utils import create_file_name,allowed_file,templated
 from school.database import db
 
 reload(sys)
@@ -20,16 +20,19 @@ blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 
 
 @blueprint.route('/')
+@templated()
 def home():
-	return render_template('superadmin/home.html')
+	return dict()
 
 
 @blueprint.route('/add_school')
+@templated()
 def add_school():
-    return render_template('superadmin/add_school.html')
+    return dict()
 
 
 @blueprint.route('/add_school',methods=['POST'])
+@templated()
 def add_school_post():
 	name = request.form.get('name','')
 	if name:
@@ -41,7 +44,7 @@ def add_school_post():
 
 @blueprint.route('/add_grade/<int:id>')
 def add_grade(id=0):
-    return render_template('superadmin/add_grade.html',school_id=id)
+	return dict(school_id=id)
 
 
 @blueprint.route('/add_grade',methods=['POST'])
@@ -57,8 +60,9 @@ def add_grade_post():
 
 
 @blueprint.route('/add_classes/<int:id>')
+@templated()
 def add_classes(id=0):
-    return render_template('superadmin/add_classes.html',grade_id=id)
+	return dict(grade_id=id)
 
 
 @blueprint.route('/add_classes',methods=['POST'])
@@ -74,17 +78,36 @@ def add_classes_post():
 	return redirect(url_for('.home'))
 
 
-
-
 @blueprint.route('/all_school')
+@templated()
 def all_school():
-	return render_template('superadmin/all_school.html',school=School.query.order_by(desc('id')).all())
-
+	return dict(school=School.query.order_by(desc('id')).all())
 
 
 @blueprint.route('/all_version')
+@templated()
 def all_version():
-	return render_template('superadmin/all_version.html',version=SystemVersion.query.order_by(desc('id')).all())
+	return dict(version=SystemVersion.query.order_by(desc('id')).all())
+
+
+@blueprint.route('/all_users')
+@templated()
+def all_users():
+	users = User.query\
+		.with_entities(\
+			User.id,\
+			User.username,\
+			User.first_name,\
+			User.phone,\
+			User.wechat_id,\
+			Role.name
+			)\
+		.join(Role,Role.id==User.role)\
+		.order_by(desc('id'))\
+		.all()
+	return dict(users=users)
+
+
 
 
 @blueprint.route('/add_version',methods=['GET'])

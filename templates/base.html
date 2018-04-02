@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+
+        <meta name="format-detection" content="telephone=no">
+        <title>{% block title %}{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{url_for('static',filename='css/bootstrap.min.css')}}">
+        
+
+        
+        <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+        <script src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+        
+
+
+        
+        
+        {% endblock %}
+    </head>
+    
+    <body>
+
+    {%for message in get_flashed_messages()%}
+    <div class="panel-body">
+        <div class="alert alert-warning alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-hidden="true">
+                &times;
+            </button>
+            {{message}}
+        </div>
+
+    </div>
+    {%endfor%}
+
+    {% block body %}
+
+
+
+    {% endblock %}
+  
+
+</html>
+
+	
+
+
+

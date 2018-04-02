@@ -1,30 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	<title>superadmin</title>
-</head>
-<body>
-{%for message in get_flashed_messages(category_filter=['success'])%}
-        
-<div class="ui-tooltips ui-tooltips-guide">
-    <div class="ui-tooltips-cnt ui-border-b">
-        <i></i>
-        {{message}}
-    </div>
-</div>
-{%endfor%}
+{% extends "base.html" %}
+{% block title %}主页{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
 
 
-<a href="{{url_for('superadmin.all_version')}}">版本</a>
-<a href="{{url_for('superadmin.all_school')}}">学校</a>
-<a href="">数据统计</a>	
-	
 
-	
-
-
-</body>
-</html>
+{% endblock %}

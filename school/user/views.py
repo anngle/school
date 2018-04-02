@@ -99,30 +99,43 @@ def send_leave_post():
 	ask_end_time =  request.form.get('ask_end_time','')
 	why =  request.form.get('why','')
 	# student = Student.query.filter_by(number=number).filter(Student.classes.grade.schools==current_user.schools).first()
-	student = Student.query.filter(Student.number==number) \
+	if not number:
+		number = current_user.student.number
+
+	student = Student.query\
 		.join(Classes,Classes.id==Student.classesd) \
 		.join(Grade,Grade.id==Classes.grades) \
 		.join(School,School.id==Grade.school) \
-		.filter(School.id==current_user.school).first()
+		.filter(School.id==current_user.school)\
+		.filter(Student.number==number)\
+		.first()
+	if not student:
+		flash(u'没有该学生','danger')
+		return redirect(url_for('.send_leave'))
 
-	banzhuren = student.classes.teacher.users
+	try:
+		banzhuren = student.classes.teacher.users
+	except Exception, e:
+		flash(u'改班级未设置班主任。不能请假','danger')
+		return redirect(url_for('.send_leave'))
+	
 
 	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1])).first():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
-		return redirect(url_for('public.home'))
+		return redirect(url_for('.send_leave'))
 
 	student_role = Role.query.filter_by(name='Students').first()
 	if current_user.roles==student_role:
 		if current_user !=student.users:
 			flash(u'你也是学生不能帮其他同学请假的哟。','danger')
-			return redirect(url_for('public.home'))
+			return redirect(url_for('.send_leave'))
 
 	if student_role!=current_user.roles:
 		if  student.parents:
 			patriarch_role = Role.query.filter_by(name='Patriarch').first()
 			if student.parents.users != current_user:
 				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
-				return redirect(url_for('public.home'))
+				return redirect(url_for('.send_leave'))
 	
 	AskLeave.create(
 		send_ask_user=current_user,
@@ -132,8 +145,11 @@ def send_leave_post():
 		ask_end_time = ask_end_time,
 		why = why
 	)
+	
+	#此处增加微信通知班主任和家长
+
 	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
-	return redirect(url_for('public.home'))
+	return redirect(url_for('.my_leave'))
 
 
 #我的请假
@@ -147,7 +163,7 @@ def my_leave():
 			.order_by('charge_state').all()
 	else:
 		askleave  = []
-	return render_template('users/my_senf_leave.html',askleave=askleave)
+	return render_template('users/my_leave.html',askleave=askleave)
 
 
 @blueprint.route('/charge_leave')
@@ -186,7 +202,7 @@ def charge_ask_leave(id=0):
 
 #自动注册 
 @blueprint.route('/autoregister')
-@oauth(scope='snsapi_base')
+# @oauth(scope='snsapi_base')
 def autoregister():
 	try:
 		wechat_id = session.get('wechat_user_id','')
