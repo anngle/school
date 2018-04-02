@@ -15,13 +15,10 @@ add the following to ``.bashrc`` or ``.bash_profile``.
 
     export SCHOOL_SECRET='something-really-secret'
 
-Run the following commands to bootstrap your environment ::
-
     git clone https://github.com/anngle/school
     cd school
     pip install -r requirements/dev.txt
-    npm install
-    npm start  # run the webpack dev server and flask server using concurrently
+    mkdir logging
 
 You will see a pretty welcome screen.
 

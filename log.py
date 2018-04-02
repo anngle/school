@@ -79,7 +79,10 @@ def get_logger(logfile_name=__name__, log_path=LOG_PATH):
 logger = get_logger()
 
 
-
+# handler = logging.FileHandler('loggings.log', encoding='UTF-8')
+# logging_format = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(lineno)s - %(message)s')
+# handler.setFormatter(logging_format)
+# app.logger.addHandler(handler)
 
 
 

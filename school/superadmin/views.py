@@ -45,6 +45,7 @@ def add_school_post():
 
 
 @blueprint.route('/add_grade/<int:id>')
+@templated()
 def add_grade(id=0):
 	return dict(school_id=id)
 
