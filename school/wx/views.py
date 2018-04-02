@@ -13,12 +13,7 @@ def createmenu():
         {"type":"view","name":u"请假","sub_button":[
             {
                 "type":"view",
-                "name":u"我要请假",
-                "url":"http://school.anaf.cn/users/my_leave"
-            },
-            {
-                "type":"view",
-                "name":u"代请假",
+                "name":u"发起请假",
                 "url":"http://school.anaf.cn/users/send_leave"
             },
         ]},\
@@ -27,7 +22,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://school.anaf.cn/'
+                "url":'http://school.anaf.cn/users'
             },
             {
                 "type":"view",
