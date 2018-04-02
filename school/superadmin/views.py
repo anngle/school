@@ -125,8 +125,7 @@ def all_students():
 			Student.classesd,\
 			)\
 		.all()
-	logger.debug(u'所有学生')
-	print os.getcwd()
+	logger.info(u'所有学生')
 	return dict(students=students)
 
 
