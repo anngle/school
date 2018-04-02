@@ -105,6 +105,8 @@ def all_users():
 		.join(Role,Role.id==User.role)\
 		.order_by(desc('id'))\
 		.all()
+	for i in users:
+		print i.wechat_id
 	return dict(users=users)
 
 

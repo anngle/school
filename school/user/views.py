@@ -98,7 +98,6 @@ def send_leave_post():
 	ask_start_time =  request.form.get('ask_start_time','')
 	ask_end_time =  request.form.get('ask_end_time','')
 	why =  request.form.get('why','')
-	# student = Student.query.filter_by(number=number).filter(Student.classes.grade.schools==current_user.schools).first()
 	if not number:
 		number = current_user.student.number
 
@@ -110,7 +109,7 @@ def send_leave_post():
 		.filter(Student.number==number)\
 		.first()
 	if not student:
-		flash(u'没有该学生','danger')
+		flash(u'没有该学生,请重新输入正确的学号。','danger')
 		return redirect(url_for('.send_leave'))
 
 	try:
