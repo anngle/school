@@ -68,11 +68,11 @@ def get_logger(logfile_name=__name__, log_path=LOG_PATH):
 		file_handler.setFormatter(formatter)
 		logger.addHandler(file_handler)
 
-	console_handler = logging.StreamHandler()
-	console_handler.name = "console"
-	console_handler.setLevel(logging.DEBUG)
-	console_handler.setFormatter(formatter)
-	logger.addHandler(console_handler)
+	# console_handler = logging.StreamHandler()
+	# console_handler.name = "console"
+	# console_handler.setLevel(logging.DEBUG)
+	# console_handler.setFormatter(formatter)
+	# logger.addHandler(console_handler)
 
 	return logger
 
