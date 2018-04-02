@@ -11,6 +11,8 @@ from ..user.models import User,Role
 from school.utils import create_file_name,allowed_file,templated
 from school.database import db
 
+from log import logger
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
@@ -105,8 +107,8 @@ def all_users():
 		.join(Role,Role.id==User.role)\
 		.order_by(desc('id'))\
 		.all()
-	for i in users:
-		print i.wechat_id
+	# for i in users:
+	# 	print i.wechat_id
 	return dict(users=users)
 
 
@@ -123,6 +125,8 @@ def all_students():
 			Student.classesd,\
 			)\
 		.all()
+	logger.debug(u'所有学生')
+	print os.getcwd()
 	return dict(students=students)
 
 
