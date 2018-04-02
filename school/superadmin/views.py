@@ -237,5 +237,12 @@ def add_student():
 		return redirect(url_for('.show_classes',id=classes_id))
 	
 
+@blueprint.route('/delete_users/<int:id>')
+def delete_users(id=0):
+	users = User.query.get_or_404(id)
+	users.delete()
+	flash(u'删除成功。')
+	return redirect(url_for('.all_users'))
+
 
 
