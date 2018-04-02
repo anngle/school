@@ -33,6 +33,8 @@ def register_extensions(app):
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
     wechat.init_app(app)
+    
+
     return None
 
 

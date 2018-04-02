@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}所有用户{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
+<div class="col-sm-10">
+
+<div class="table-responsive">
+  <table class="table">
+    <caption>所有学生</caption>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>mumber</th>
+        <th>sex</th>
+        <th>user</th>
+        <th>parent</th>
+        <th>classesd</th>
+      </tr>
+    </thead>
+    <tbody>
+    {%for i in students%}
+      <tr>
+        <td>{{i.id}}</td>
+        <td>{{i.number}}</td>
+        <td>{{i.sex}}</td>
+        <td>{{i.user}}</td>
+        <td>{{i.parent}}</td>
+        <td>{{i.classesd}}</td>
+       </tr>
+    {%endfor%}
+  </table>
+</div>
+
+</div>
+{% endblock %}
+

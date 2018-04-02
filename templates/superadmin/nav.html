@@ -7,10 +7,20 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="{{url_for('superadmin.all_version')}}">版本</a></li>
             <li><a href="{{url_for('superadmin.all_school')}}">学校</a></li>
-            <li><a href="{{url_for('superadmin.all_users')}}">用户</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    用户<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{url_for('superadmin.all_users')}}">所有用户</a></li>
+                    <li><a href="{{url_for('superadmin.all_students')}}">所有学生</a></li>
+                    <li><a href="{{url_for('superadmin.all_teacher')}}">所有教师</a></li>
+                </ul>
+            </li>
             <li><a href="{{url_for('superadmin.all_school')}}">统计</a></li>
             
         </ul>
     </div>
     </div>
 </nav>
+

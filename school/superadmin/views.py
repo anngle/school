@@ -6,7 +6,7 @@ from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 import xlrd,sys,datetime,os
 
-from ..public.models import School,Grade,Classes,Student
+from ..public.models import School,Grade,Classes,Student,StudentParent
 from ..user.models import User,Role
 from school.utils import create_file_name,allowed_file,templated
 from school.database import db
@@ -109,6 +109,28 @@ def all_users():
 		print i.wechat_id
 	return dict(users=users)
 
+
+@blueprint.route('/all_students')
+@templated()
+def all_students():
+	students = Student.query\
+		.with_entities(\
+			Student.id,\
+			Student.number,\
+			Student.sex,\
+			Student.user,\
+			Student.parent,\
+			Student.classesd,\
+			)\
+		.all()
+	return dict(students=students)
+
+
+#所有老师
+@blueprint.route('/all_teacher')
+@templated()
+def all_teacher():
+	return dict()
 
 
 

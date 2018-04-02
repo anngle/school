@@ -48,7 +48,10 @@ env/
 # npm
 /node_modules/
 
-# webpack-built files
+
+#other
 /school/static/build/
 /school/webpack/manifest.json
 data/
+loggings.log
+

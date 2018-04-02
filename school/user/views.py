@@ -214,7 +214,7 @@ def autoregister():
 	if user:
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
-
+	current_app.logger.info('所有学生')
 	choice_str = 'ABCDEFGHJKLNMPQRSTUVWSXYZ'
 	username_str = ''
 	password_str = ''
