@@ -104,6 +104,9 @@ def send_leave():
 @login_required
 @permission_required(Permission.LEAVE)
 def send_leave_post():
+
+	logger.info(u'进来了')
+
 	form = SendLeaveForm()
 	if not form.validate_on_submit():
 		flash_errors(form)

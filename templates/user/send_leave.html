@@ -7,7 +7,6 @@
 
 <form action="{{url_for('user.send_leave_post')}}" method="post">
 {{ form.hidden_tag() }}
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
 	<div class="form-group">
 		{{ form.number.label(class='col-sm-2 control-label') }} 
