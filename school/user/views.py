@@ -149,18 +149,21 @@ def send_leave_post():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
 		return redirect(url_for('.members'))
 
-	student_role = Role.query.filter_by(name='Students').first()
-	if current_user.roles==student_role:
-		if current_user !=student.users:
-			flash(u'你也是学生不能帮其他同学请假的哟。','danger')
-			return redirect(url_for('.members'))
-
-	if student_role!=current_user.roles:
-		if  student.parents:
-			patriarch_role = Role.query.filter_by(name='Patriarch').first()
-			if student.parents.users != current_user:
-				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
+	doork = student_role = Role.query.filter_by(name='Doorkeeper').first()
+	#如果不是门卫 则则判断其他角色
+	if not current_user.roles!=doork:	
+		student_role = Role.query.filter_by(name='Students').first()
+		if current_user.roles==student_role:
+			if current_user !=student.users:
+				flash(u'你也是学生不能帮其他同学请假的哟。','danger')
 				return redirect(url_for('.members'))
+
+		if student_role!=current_user.roles:
+			if  student.parents:
+				patriarch_role = Role.query.filter_by(name='Patriarch').first()
+				if student.parents.users != current_user:
+					flash(u'您是家长只能给自己家的小孩请假哟。','danger')
+					return redirect(url_for('.members'))
 
 	try:
 		banzhuren = student.classes.teacher.users
