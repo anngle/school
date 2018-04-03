@@ -5,19 +5,6 @@
         <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >发起请假</h3>       
 </nav>
 
-{%for message in get_flashed_messages()%}
-<div class="panel-body">
-    <div class="alert alert-warning alert-dismissable">
-        <button type="button" class="close" data-dismiss="alert"
-                aria-hidden="true">
-            &times;
-        </button>
-        {{message}}
-    </div>
-
-</div>
-{%endfor%}
-    
 <form action="{{url_for('user.send_leave_post')}}" method="post">
 {{ form.hidden_tag() }}
 
