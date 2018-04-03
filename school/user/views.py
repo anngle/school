@@ -108,11 +108,14 @@ def send_leave_post():
 	logger.info(u'进来了0')
 
 	form = SendLeaveForm()
+
+	logger.info(u'进来了0-2')
+
 	if not form.validate_on_submit():
 		flash_errors(form)
 		logger.info(u'进来了0-1')
 		return redirect(url_for('.send_leave'))
-
+		
 	logger.info(u'进来了1')
 
 	number = form.number.data

@@ -53,5 +53,5 @@ env/
 /school/static/build/
 /school/webpack/manifest.json
 data/
-logging/
+logging/*.log
 loggings.log
