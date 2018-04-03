@@ -24,6 +24,13 @@ blueprint = Blueprint('user', __name__, url_prefix='/users')
 @login_required
 def members():
     """List members."""
+    try:
+		msg_title = u'您的小孩：发起了请假'
+		msg_description = u'请假时间：<br/>请假原因：'
+		wechat.message.send_text_card('oN-VsuEz71VEihapalvXNobXLrYk',msg_title,msg_description)
+	except Exception, e:
+		logger.info(str(e))
+
     return dict()
 
 @blueprint.route('/set_roles')
