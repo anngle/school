@@ -6,6 +6,7 @@ from school.user.models  import Permission
 
 
 def permission_required(permission):
+    
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -15,5 +16,6 @@ def permission_required(permission):
             return f(*args, **kwargs)
         return decorated_function
     return decorator
+
     def admin_required(f):
         return permission_required(Permission.ADMINISTER)(f)
