@@ -209,7 +209,7 @@ def autoregister():
 		wechat_id = session['wechat_user_id']
 		logger.info(u'微信ID:%s,2已经进入'%wechat_id)
 	except Exception, e:
-		logger.info(u'微信ID:%s,error已经进入'%wechat_id)
+		logger.info(u'错误:%s,error已经进入'%str(e))
 		wechat_id = ''
 	if wechat_id:
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
