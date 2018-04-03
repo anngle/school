@@ -145,10 +145,7 @@ def send_leave_post():
 
 	doork = student_role = Role.query.filter_by(name='Doorkeeper').first()
 	#如果不是门卫 则则判断其他角色
-	print current_user.roles
-	print doork.name
-	print not current_user.roles!=doork
-	if not current_user.roles!=doork:	
+	if current_user.roles!=doork:	
 		student_role = Role.query.filter_by(name='Students').first()
 		if current_user.roles==student_role:
 			if current_user !=student.users:
