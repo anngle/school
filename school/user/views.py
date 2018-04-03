@@ -96,7 +96,7 @@ def send_leave():
 
 
 @blueprint.route('/send_leave',methods=['POST'])
-@login_required
+# @login_required
 @permission_required(Permission.LEAVE)
 def send_leave_post():
 	number = request.form.get('number','')
