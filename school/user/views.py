@@ -214,7 +214,8 @@ def autoregister():
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
 	else:
 		user = []
-
+	logger.info('autoregister:%s'%wechat_id)
+	logger.info('autoregister:user%s'%user)
 	if user:
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
