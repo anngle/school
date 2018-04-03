@@ -4,7 +4,7 @@ from flask import flash,current_app,render_template,request
 import time,random,hashlib
 from functools import wraps
 
-
+import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
