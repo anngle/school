@@ -203,7 +203,6 @@ def charge_ask_leave(id=0):
 @blueprint.route('/autoregister')
 @oauth(scope='snsapi_base')
 def autoregister():
-	logger.info(u'微信ID:%s,未经进入'%wechat_id)
 
 	try:
 		wechat_id = session.get('wechat_user_id','')
