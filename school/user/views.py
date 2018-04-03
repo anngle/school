@@ -182,16 +182,16 @@ def send_leave_post():
 	#此处增加微信通知班主任和家长
 	try:
 		teacher_wechat = student.classes.teacher.users.wechat_id
-		msg_title = u'您的学生：%s发起了请假,<br/>'%student.name
-		msg_title += u'请假时间：%s-%s <br/>请假原因：%s,<br/>如同意请回复"ag%s",拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
+		msg_title = u'您的学生：%s发起了请假,<br>'%student.name
+		msg_title += u'请假时间：%ss至%s <br>请假原因：%s,<br/>如同意请回复"ag%s",拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
 		wechat.message.send_text(teacher_wechat,msg_title)
 	except Exception, e:
 		logger.error(str(e))
 
 	try:
 		teacher_wechat = student.parents.users.wechat_id
-		msg_title = u'您的小孩：%s发起了请假,<br/>'%student.name
-		msg_title += u'请假时间：%s-%s <br/>请假原因：%s'%(str(ask_start_time),str(ask_end_time),why)
+		msg_title = u'您的小孩：%s发起了请假,<br>'%student.name
+		msg_title += u'请假时间：%s至%s <br>请假原因：%s'%(str(ask_start_time),str(ask_end_time),why)
 		wechat.message.send_text(teacher_wechat,msg_title)
 	except Exception, e:
 		logger.error(str(e))
