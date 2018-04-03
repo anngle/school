@@ -3,6 +3,8 @@ from functools import wraps
 from flask import abort,flash
 from flask_login import current_user
 from school.user.models  import Permission
+
+
 def permission_required(permission):
     def decorator(f):
         @wraps(f)
