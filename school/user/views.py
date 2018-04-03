@@ -11,7 +11,7 @@ import datetime as dt
 from .models import User,Role,Permission
 from ..public.models import *
 from ..decorators import permission_required
-
+from log import logger
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
