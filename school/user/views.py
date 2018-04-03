@@ -12,6 +12,7 @@ from .models import User,Role,Permission
 from ..public.models import *
 from ..decorators import permission_required
 from log import logger
+from ..extensions import wechat
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
@@ -103,8 +104,12 @@ def send_leave_post():
 	ask_end_time =  request.form.get('ask_end_time','')
 	why =  request.form.get('why','')
 	if not number:
-		number = current_user.student.number
-
+		try:
+			number = current_user.student.number
+		except Exception, e:
+			flash(u'请输入学号')
+			return redirect(url_for('.send_leave'))
+		
 	student = Student.query\
 		.join(Classes,Classes.id==Student.classesd) \
 		.join(Grade,Grade.id==Classes.grades) \
@@ -116,13 +121,7 @@ def send_leave_post():
 		flash(u'没有该学生,请重新输入正确的学号。','danger')
 		return redirect(url_for('.send_leave'))
 
-	try:
-		banzhuren = student.classes.teacher.users
-	except Exception, e:
-		flash(u'改班级未设置班主任。不能请假','danger')
-		return redirect(url_for('.send_leave'))
 	
-
 	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1])).first():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
 		return redirect(url_for('.send_leave'))
@@ -139,8 +138,14 @@ def send_leave_post():
 			if student.parents.users != current_user:
 				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
 				return redirect(url_for('.send_leave'))
+
+	try:
+		banzhuren = student.classes.teacher.users
+	except Exception, e:
+		flash(u'该班级未设置班主任。不能请假','danger')
+		return redirect(url_for('.send_leave'))
 	
-	AskLeave.create(
+	ask = AskLeave.create(
 		send_ask_user=current_user,
 		ask_student = student,
 		charge_ask_user = banzhuren,
@@ -150,6 +155,23 @@ def send_leave_post():
 	)
 	
 	#此处增加微信通知班主任和家长
+	try:
+		teacher_wechat = student.classes.teacher.users.wechat_id
+		msg_title = u'您的学生：%s发起了请假'%student.name
+		msg_description u'请假时间：%s-%s <br/>请假原因：%s,<br/>如同意请回复ag%s,拒绝请回复re%s,'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
+		wechat.message.send_text_card(teacher_wechat,msg_title,msg_description)
+	except Exception, e:
+		logger.error(str(e))
+
+	try:
+		teacher_wechat = student.parents.users.wechat_id
+		msg_title = u'您的小孩：%s发起了请假'%student.name
+		msg_description u'请假时间：%s-%s <br/>请假原因：%s'%(str(ask_start_time),str(ask_end_time),why)
+		wechat.message.send_text_card(teacher_wechat,msg_title,msg_description)
+	except Exception, e:
+		logger.error(str(e))
+
+	
 
 	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
 	return redirect(url_for('.my_leave'))
