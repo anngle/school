@@ -117,7 +117,7 @@ def send_leave_post():
 		flash_errors(form)
 		logger.info(u'进来了0-1')
 		flash(u'校验错误')
-		return redirect(url_for('.send_leave'))
+		return redirect(url_for('.members'))
 
 	logger.info(u'进来了1')
 
@@ -131,7 +131,7 @@ def send_leave_post():
 			number = current_user.student.number
 		except Exception, e:
 			flash(u'请输入学号')
-			return redirect(url_for('.send_leave'))
+			return redirect(url_for('.members'))
 		
 	student = Student.query\
 		.join(Classes,Classes.id==Student.classesd) \
@@ -142,31 +142,31 @@ def send_leave_post():
 		.first()
 	if not student:
 		flash(u'没有该学生,请重新输入正确的学号。','danger')
-		return redirect(url_for('.send_leave'))
+		return redirect(url_for('.members'))
 
 	
 	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1])).first():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
-		return redirect(url_for('.send_leave'))
+		return redirect(url_for('.members'))
 
 	student_role = Role.query.filter_by(name='Students').first()
 	if current_user.roles==student_role:
 		if current_user !=student.users:
 			flash(u'你也是学生不能帮其他同学请假的哟。','danger')
-			return redirect(url_for('.send_leave'))
+			return redirect(url_for('.members'))
 
 	if student_role!=current_user.roles:
 		if  student.parents:
 			patriarch_role = Role.query.filter_by(name='Patriarch').first()
 			if student.parents.users != current_user:
 				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
-				return redirect(url_for('.send_leave'))
+				return redirect(url_for('.members'))
 
 	try:
 		banzhuren = student.classes.teacher.users
 	except Exception, e:
 		flash(u'该班级未设置班主任。不能请假','danger')
-		return redirect(url_for('.send_leave'))
+		return redirect(url_for('.members'))
 	
 	ask = AskLeave.create(
 		send_ask_user=current_user,
