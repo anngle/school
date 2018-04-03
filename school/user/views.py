@@ -39,6 +39,7 @@ def set_roles_post():
 	phone = request.form.get('phone','0')
 	name = request.form.get('name','')
 	school = School.query.get_or_404(school_id)
+	logger.info(u'doork0')
 	#教师
 	if int(role_id) ==1:
 		if verify != current_app.config['REGISTERVERIFY']:
@@ -70,7 +71,9 @@ def set_roles_post():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name+'的家长')
 		flash(u'您已设置角色为“%s”的家长。'%name,'success')
 	#门卫
+	logger.info(u'doork1')
 	if int(role_id)==3:
+		logger.info(u'doork2')
 		if verify != current_app.config['REGISTERVERIFY']:
 			flash(u'校验码错误','danger')
 			return redirect(url_for('public.home'))
@@ -210,7 +213,7 @@ def autoregister():
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
 	else:
 		user = []
-		
+
 	if user:
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
