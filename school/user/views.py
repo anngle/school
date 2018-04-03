@@ -24,13 +24,7 @@ blueprint = Blueprint('user', __name__, url_prefix='/users')
 @login_required
 def members():
 	"""List members."""
-	try:
-		msg_title = u'您的小孩：发起了请假'
-		msg_description = u'请假时间：<br/>请假原因：'
-		wechat.message.send_text('oN-VsuEz71VEihapalvXNobXLrYk',msg_title,msg_description)
-	except Exception, e:
-		logger.info(str(e))
-
+	
 	return dict()
 
 @blueprint.route('/set_roles')
@@ -153,7 +147,7 @@ def send_leave_post():
 	#如果不是门卫 则则判断其他角色
 	print current_user.roles
 	print doork.name
-	print not current_user.roles!=doork:	
+	print not current_user.roles!=doork
 	if not current_user.roles!=doork:	
 		student_role = Role.query.filter_by(name='Students').first()
 		if current_user.roles==student_role:
