@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash
+from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash, session
 from flask_login import login_required,login_user,current_user
 import time,random
 from sqlalchemy import desc
@@ -203,18 +203,14 @@ def charge_ask_leave(id=0):
 @blueprint.route('/autoregister')
 @oauth(scope='snsapi_base')
 def autoregister():
-	try:
-		wechat_id = session.get('wechat_user_id','')
-		logger.info(u'微信ID:%s,1已经进入'%wechat_id)
-		wechat_id = session['wechat_user_id']
-		logger.info(u'微信ID:%s,2已经进入'%wechat_id)
-	except Exception, e:
-		logger.info(u'错误:%s,error已经进入'%str(e))
-		wechat_id = ''
+
+	wechat_id = session.get('wechat_user_id','')
+	
 	if wechat_id:
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
 	else:
 		user = []
+		
 	if user:
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
