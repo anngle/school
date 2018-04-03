@@ -105,12 +105,14 @@ def send_leave():
 @permission_required(Permission.LEAVE)
 def send_leave_post():
 
-	logger.info(u'进来了')
+	logger.info(u'进来了0')
 
 	form = SendLeaveForm()
 	if not form.validate_on_submit():
 		flash_errors(form)
 		return redirect(url_for('.send_leave'))
+
+	logger.info(u'进来了1')
 
 	number = form.number.data
 	ask_start_time = form.start_time.data
