@@ -38,3 +38,16 @@ class RegisterForm(FlaskForm):
             self.email.errors.append('Email already registered')
             return False
         return True
+
+
+class SendLeaveForm(FlaskForm):
+    number = StringField(u'请假人学号',validators=[DataRequired(), Length(min=1, max=25)])
+    start_time = StringField(u'请假开始时间',validators=[DataRequired(), Length(min=3, max=25)])
+    end_time = StringField(u'请假结束时间',validators=[DataRequired(), Length(min=3, max=25)])
+    why = StringField(u'请假事由',validators=[DataRequired(), Length(min=1, max=25)])
+
+
+
+
+
+

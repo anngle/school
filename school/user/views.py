@@ -13,15 +13,18 @@ from ..public.models import *
 from ..decorators import permission_required
 from log import logger
 from ..extensions import wechat
+from .forms import SendLeaveForm
+from school.utils import templated,flash_errors
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
 
 
 @blueprint.route('/')
+@templated()
 @login_required
 def members():
     """List members."""
-    return render_template('users/members.html')
+    return dict()
 
 @blueprint.route('/set_roles')
 @login_required
@@ -88,21 +91,29 @@ def set_roles_post():
 
 
 #发起请假
-@blueprint.route('/send_leave')
+@blueprint.route('/send_leave',methods=['GET'])
+@templated()
 @login_required
 @permission_required(Permission.LEAVE)
 def send_leave():
-	return render_template('users/send_leave.html')
+	form = SendLeaveForm()
+	return dict(form=form)
 
 
 @blueprint.route('/send_leave',methods=['POST'])
-# @login_required
+@login_required
 @permission_required(Permission.LEAVE)
 def send_leave_post():
-	number = request.form.get('number','')
-	ask_start_time =  request.form.get('ask_start_time','')
-	ask_end_time =  request.form.get('ask_end_time','')
-	why =  request.form.get('why','')
+	form = SendLeaveForm()
+	if not form.validate_on_submit():
+		flash_errors(form)
+		return redirect(url_for('.send_leave'))
+
+	number = form.number.data
+	ask_start_time = form.start_time.data
+	ask_end_time = form.end_time.data
+	why = form.why.data
+
 	if not number:
 		try:
 			number = current_user.student.number
@@ -179,6 +190,7 @@ def send_leave_post():
 
 #我的请假
 @blueprint.route('/my_leave')
+@templated()
 @login_required
 def my_leave():
 	if current_user.student:
@@ -188,7 +200,7 @@ def my_leave():
 			.order_by('charge_state').all()
 	else:
 		askleave  = []
-	return render_template('users/my_leave.html',askleave=askleave)
+	return dict(askleave=askleave)
 
 
 @blueprint.route('/charge_leave')
