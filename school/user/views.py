@@ -28,9 +28,10 @@ def members():
 
 @blueprint.route('/set_roles')
 @login_required
+@templated()
 def set_roles():
 	school = School.query.filter_by(active=True).order_by(desc('id')).all()
-	return render_template('users/set_roles.html',school=school)
+	return dict(school=school)
 
 
 @blueprint.route('/set_roles',methods=["POST"])
@@ -211,18 +212,20 @@ def my_leave():
 
 @blueprint.route('/charge_leave')
 @login_required
+@templated()
 @permission_required(Permission.ALLOW_LEAVE)
 def charge_leave():
 	askleave = AskLeave.query.filter_by(charge_ask_user=current_user).order_by('charge_state').all()
-	return render_template('users/charge_leave.html',askleave=askleave)
+	return dict(askleave=askleave)
 
 
 #我的发起的请假
 @blueprint.route('/my_senf_leave')
 @login_required
+@templated()
 def my_senf_leave():
 	askleave = AskLeave.query.filter_by(send_ask_user=current_user).order_by('charge_state').all()
-	return render_template('users/my_senf_leave.html',askleave=askleave)
+	return dict(askleave=askleave)
 
 
 @blueprint.route('/charge_ask_leave/<int:id>')
