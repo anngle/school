@@ -194,6 +194,10 @@ def send_leave_post():
 	
 
 	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
+	
+	if current_user.roles!=doork:	
+		return redirect(url_for('.my_senf_leave'))
+
 	return redirect(url_for('.my_leave'))
 
 
