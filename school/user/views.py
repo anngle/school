@@ -36,7 +36,9 @@ def set_roles():
 @blueprint.route('/set_roles',methods=["POST"])
 @login_required
 def set_roles_post():
+
 	logger.info(u'doork0')
+
 	school_id = request.form.get('school_id','0')
 	role_id = request.form.get('role_id','0')
 	number = request.form.get('number','0')
@@ -114,8 +116,9 @@ def send_leave_post():
 	if not form.validate_on_submit():
 		flash_errors(form)
 		logger.info(u'进来了0-1')
+		flash(u'校验错误')
 		return redirect(url_for('.send_leave'))
-		
+
 	logger.info(u'进来了1')
 
 	number = form.number.data

@@ -5,6 +5,10 @@ import time,random,hashlib
 from functools import wraps
 
 
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+
 def flash_errors(form, category='warning'):
     """Flash all errors for a form."""
     for field, errors in form.errors.items():
