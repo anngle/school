@@ -255,6 +255,7 @@ def charge_ask_leave(id=0):
 @blueprint.route('/return_leave/<int:id>')
 @blueprint.route('/return_leave')
 @login_required
+@templated()
 @permission_required(Permission.RETURN_LEAVE)
 def return_leave(id=0):
 	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
