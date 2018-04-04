@@ -7,7 +7,7 @@
 <div class="col-sm-10">
 	
 	{%for i in askleave%}
-	<a href="{{url_for('users.return_leave',id=i.id)}}">
+	<a href="{{url_for('user.change_return_leave',id=i.id)}}">
 
 	{%if i.charge_state==0%}
 	<div class="panel panel-primary">
