@@ -28,7 +28,6 @@ class AppLogger(Logger):
 					if record.levelno == hdlr.level:
 						hdlr.handle(record)
 
-
 			if not c.propagate:
 				c = None
 			else:
@@ -68,6 +67,7 @@ def get_logger(logfile_name=__name__, log_path=LOG_PATH):
 		file_handler.setFormatter(formatter)
 		logger.addHandler(file_handler)
 
+	#控制台显示
 	console_handler = logging.StreamHandler()
 	console_handler.name = "console"
 	console_handler.setLevel(logging.DEBUG)

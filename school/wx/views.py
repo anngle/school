@@ -4,6 +4,9 @@ from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 from school.extensions import csrf_protect,wechat
 
+import datetime as dt
+from ..public.models import AskLeave
+
 blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
 
@@ -65,7 +68,46 @@ def token_post():
     msg = request.wechat_msg
     reply=''
     if msg.type == 'text':
-        reply=TextReply(content=u'哈哈哈哈或或恍恍惚惚', message=msg)
+
+        event_str = msg.content[0:2]
+        leave_id = msg.content[2:]
+
+        #同意请假
+        if event_str == 'ag':
+
+            ask_leave = AskLeave.query.get(leave_id)
+
+            if not ask_leave:
+                reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+                return reply
+
+            if current_user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+                reply=TextReply(content=u'操作不正确', message=msg)
+                return reply
+
+            ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
+            reply=TextReply(content=u'您已同意该请假申请。', message=msg)
+            return reply
+
+
+        #不同意
+        if event_str == 're':
+            
+            ask_leave = AskLeave.query.get(leave_id)
+
+            if not ask_leave:
+                reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+                return reply
+
+            if current_user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+                reply=TextReply(content=u'操作不正确', message=msg)
+                return reply
+            #2拒绝
+            ask_leave.update(charge_state=2,charge_time=dt.datetime.now())
+            reply=TextReply(content=u'您已拒绝该请假申请。', message=msg)
+            return reply
+
+        reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
     try:
         msg.event
     except Exception, e:
