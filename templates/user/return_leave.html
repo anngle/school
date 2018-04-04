@@ -7,8 +7,7 @@
 <div class="col-sm-10">
 	
 	{%for i in askleave%}
-	<a href="{{url_for('user.change_return_leave',id=i.id)}}">
-
+	
 	{%if i.charge_state==0%}
 	<div class="panel panel-primary">
 	{%endif%}
@@ -52,10 +51,12 @@
 		
 		请假原因:{{i.why}} <br>
 		
-		创建时间:{{i.created_at}}，  
+		创建时间:{{i.created_at}}
+		<button type="button" class="btn btn-primary btn-lg btn-block"><a href="{{url_for('user.change_return_leave',id=i.id)}}">
+学生归来</a></button>
 	</div>
 </div>
-</a>
+
 {%endfor%}
 
 
