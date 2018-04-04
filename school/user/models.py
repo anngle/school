@@ -58,7 +58,7 @@ class Role(SurrogatePK, Model):
     def insert_roles():
         roles = {
             'Students': (Permission.LEAVE,True), #学生
-            'Doorkeeper': (Permission.LEAVE,False),#门卫
+            'Doorkeeper': (Permission.LEAVE|Permission.RETURN_LEAVE,False),#门卫
             'Patriarch': (Permission.LEAVE,False), #家长
             'Teacher': (Permission.ALLOW_LEAVE,False), #教师
             'Principal': (0xfff, False), #校长
@@ -72,6 +72,24 @@ class Role(SurrogatePK, Model):
             role.default = roles[r][1]
             db.session.add(role)
         db.session.commit()
+
+    """
+    @staticmethod
+    def update_roles():
+        roles = {
+            'Students': (Permission.LEAVE,True), #学生
+            'Doorkeeper': (Permission.LEAVE|Permission.RETURN_LEAVE,False),#门卫
+            'Patriarch': (Permission.LEAVE,False), #家长
+            'Teacher': (Permission.ALLOW_LEAVE,False), #教师
+            'Principal': (0xfff, False), #校长
+            'ADMIN': (0xffff, False) #管理员
+        }
+        for i in roles:
+            role = Role.query.filter_by(name=r).first()
+            if role is None:
+                role = Role(name=r)
+            role.permissions = roles[r][0]
+    """
 
 
 class User(UserMixin, SurrogatePK, Model):
