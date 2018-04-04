@@ -47,7 +47,7 @@ def get_logger(logfile_name=__name__, log_path=LOG_PATH):
 	'''
 
 	logging.setLoggerClass(AppLogger)
-	formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s', '%Y-%m-%d %H:%M:%S')
+	formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(lineno)s %(message)s', '%Y-%m-%d %H:%M:%S')
 	log_files = {
 		logging.DEBUG: os.path.join(log_path, logfile_name + '-debug.log'),\
 		logging.INFO: os.path.join(log_path, logfile_name + '-info.log'),\
