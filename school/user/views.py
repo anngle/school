@@ -252,29 +252,30 @@ def charge_ask_leave(id=0):
 
 
 #请假归来
-@blueprint.route('/return_leave')
 @login_required
 @templated()
 @permission_required(Roles.Doorkeeper)
 def return_leave():
-	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
 	print askleave
-	return dict(askleave=askleave)
+	
 
-
+#请假归来
 @blueprint.route('/return_leave/<int:id>')
+@blueprint.route('/return_leave')
 @login_required
 @permission_required(Roles.Doorkeeper)
-def return_leave_id(id=0):
-	ask_leave = AskLeave.query.get_or_404(id)
-	if ask_leave.charge_state==1	:
-		ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
-		flash(u'请假人已归来，该请假申请已完成','success')
-	else:
-		flash(u'错误。没有该请假申请，或已完成。','danger')
+def return_leave(id=0):
+	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
+	if id!=0:
+		ask_leave = AskLeave.query.get_or_404(id)
+		if ask_leave.charge_state==1	:
+			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
+			flash(u'请假人已归来，该请假申请已完成','success')
+		else:
+			flash(u'错误。没有该请假申请，或已完成。','danger')
 
 
-	return redirect(url_for('.return_leave'))
+	return dict(askleave=askleave)
 
 
 #自动注册 
