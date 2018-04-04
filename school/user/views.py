@@ -258,6 +258,7 @@ def charge_ask_leave(id=0):
 @permission_required(Roles.Doorkeeper)
 def return_leave():
 	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
+	print askleave
 	return dict(askleave=askleave)
 
 
