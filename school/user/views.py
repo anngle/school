@@ -178,7 +178,7 @@ def send_leave_post():
 	try:
 		teacher_wechat = student.classes.teacher.users.wechat_id
 		msg_title = u'您的学生：%s发起了请假,\n'%student.name
-		msg_title += u'请假时间：%ss至%s \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
+		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
 		wechat.message.send_text(teacher_wechat,msg_title)
 	except Exception, e:
 		logger.error(str(e))
