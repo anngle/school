@@ -262,7 +262,7 @@ def return_leave(id=0):
 		ask_leave = AskLeave.query.get(id)
 		if ask_leave:
 
-			if ask_leave.charge_state==1
+			if ask_leave.charge_state==1:
 				ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
 				flash(u'请假人已归来，该请假申请已完成','success')
 			else:
