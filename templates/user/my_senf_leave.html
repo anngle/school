@@ -25,7 +25,7 @@
 		请假人:{{i.ask_student.name}}
 
 {%if i.charge_state==0%}
-		等待确认 
+		[等待确认] 
 		{%endif%}
 
 		{%if i.charge_state==1%}
@@ -33,11 +33,11 @@
 		{%endif%}
 
 		{%if i.charge_state==2%}
-		已拒绝
+		[已拒绝]
 		{%endif%}
 
 		{%if i.charge_state==3%}
-		已归来，
+		[已归来]
 		{%endif%}
 
 		</h3>

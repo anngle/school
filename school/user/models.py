@@ -11,8 +11,19 @@ from school.extensions import bcrypt,login_manager
 class Permission:
     LEAVE = 0x01   #请假
     ALLOW_LEAVE = 0x02 #批准请假
+    RETURN_LEAVE = 0x04 #请假归来批准
 
     ADMINISTER = 0x8000  #管理员权限
+
+#角色
+class Roles:
+    Students = Permission.LEAVE         #学生
+    Doorkeeper = Permission.LEAVE|Permission.RETURN_LEAVE       #门卫
+    Patriarch = Permission.LEAVE        #家长
+    Teacher = Permission.ALLOW_LEAVE    #教师
+    Principal = 0xfff                   #教师
+    ADMIN = 0xffff                      #管理员
+
 
 """
 #用户角色：
