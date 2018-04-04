@@ -73,7 +73,7 @@ def token_post():
         event_str = msg.content[0:2]
         leave_id = msg.content[2:]
 
-        user = User.query.filter_by(wx_open_id=msg.source).first() 
+        user = User.query.filter_by(wechat_id=msg.source).first() 
 
         #同意请假
         if event_str == 'ag':
