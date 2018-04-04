@@ -249,21 +249,13 @@ def charge_ask_leave(id=0):
 	flash(u'您已同意该请假申请','success')
 
 	return redirect(url_for('user.charge_leave'))
-
-
-#请假归来
-@login_required
-@templated()
-@permission_required(Roles.Doorkeeper)
-def return_leave():
-	print askleave
 	
 
 #请假归来
 @blueprint.route('/return_leave/<int:id>')
 @blueprint.route('/return_leave')
 @login_required
-@permission_required(Roles.Doorkeeper)
+@permission_required(Permission.RETURN_LEAVE)
 def return_leave(id=0):
 	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
 	if id!=0:
