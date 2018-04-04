@@ -6,6 +6,7 @@ from school.extensions import csrf_protect,wechat
 
 import datetime as dt
 from ..public.models import AskLeave
+from ..user.models import User
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
@@ -72,6 +73,8 @@ def token_post():
         event_str = msg.content[0:2]
         leave_id = msg.content[2:]
 
+        user = User.query.filter_by(wx_open_id=msg.source).first() 
+
         #同意请假
         if event_str == 'ag':
 
@@ -81,7 +84,7 @@ def token_post():
                 reply=TextReply(content=u'输入请假编号不正确。', message=msg)
                 return reply
 
-            if current_user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+            if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
                 reply=TextReply(content=u'操作不正确', message=msg)
                 return reply
 
@@ -99,7 +102,7 @@ def token_post():
                 reply=TextReply(content=u'输入请假编号不正确。', message=msg)
                 return reply
 
-            if current_user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+            if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
                 reply=TextReply(content=u'操作不正确', message=msg)
                 return reply
             #2拒绝
