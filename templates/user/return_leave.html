@@ -52,8 +52,9 @@
 		请假原因:{{i.why}} <br>
 		
 		创建时间:{{i.created_at}}
-		<button type="button" class="btn btn-primary btn-lg btn-block"><a href="{{url_for('user.change_return_leave',id=i.id)}}">
-学生归来</a></button>
+		<a href="{{url_for('user.change_return_leave',id=i.id)}}">
+		<button type="button" class="btn btn-primary btn-lg btn-block">
+学生归来</button></a>
 	</div>
 </div>
 
