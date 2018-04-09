@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """Superadmin views."""
-from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app
+from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app, Response
 from .models import SystemVersion
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
-import xlrd,sys,datetime,os
+from werkzeug.datastructures import Headers
+import xlrd, sys, datetime, os, xlsxwriter, StringIO,mimetypes
 
-from ..public.models import School,Grade,Classes,Student,StudentParent
+from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave
 from ..user.models import User,Role
 from school.utils import create_file_name,allowed_file,templated
 from school.database import db
@@ -248,5 +249,95 @@ def delete_users(id=0):
 @templated()
 def all_parent():
 	return dict(parent=StudentParent.query.order_by(desc('id')).all())
+
+
+@blueprint.route('/all_ask_leave')
+@blueprint.route('/all_ask_leave/<toexcel>')
+@templated()
+def all_ask_leave(toexcel=''):
+	leave = AskLeave.query\
+		.with_entities(\
+			AskLeave.ask_start_time,\
+			AskLeave.ask_end_time,\
+			AskLeave.back_leave_time,\
+			AskLeave.charge_time,\
+			AskLeave.charge_state,\
+			AskLeave.why,\
+			AskLeave.created_at,\
+			Student.name,\
+			Grade.name,\
+			School.name,\
+			Classes.name,\
+			)\
+		.join(Student,Student.id==AskLeave.ask_users)\
+		.join(Classes,Classes.id==Student.classesd)\
+		.join(Grade,Grade.id==Classes.grades)\
+		.join(School,School.id==Grade.school)\
+		.all()
+	if not toexcel:
+		return dict(leave=leave)
+	else:
+		try:			
+			title_shipment = [u'学校',u'年级',u'班级',u'学生',u'请假时间',u'归来时间',u'批准时间',u'请假原因',u'状态',u'创建时间']
+			shijian = datetime.datetime.now()
+
+			response = Response()
+			response.status_code = 200
+
+			output = StringIO.StringIO()
+			wb = xlsxwriter.Workbook(output, {'in_memory': True})
+			ws = wb.add_worksheet(u'请假数据表')
+
+			for i,x in enumerate(title_shipment):
+				ws.write(0,i,x)
+
+			for i,x in enumerate(leave):
+				ws.write(i+1,0,x[9])
+				ws.write(i+1,1,x[8])
+				ws.write(i+1,2,x[10])
+				ws.write(i+1,3,x[7])
+				ws.write(i+1,4,str(x[0])+u"到"+str(x[1]))
+				ws.write(i+1,5,x[2])
+				ws.write(i+1,6,x[3])
+				ws.write(i+1,7,x[5])
+				ws.write(i+1,8,x[4])
+				ws.write(i+1,9,str(x[6]))
+
+			wb.close()
+			output.seek(0)
+			response.data = output.read()
+
+			file_name = u'all_ask_leave{}.xlsx'.format(datetime.datetime.now())
+			mimetype_tuple = mimetypes.guess_type(file_name)
+
+			response_headers = Headers({
+				'Pragma': "public",  # required,
+				'Expires': '0',
+				'Charset': 'UTF-8',
+				'Cache-Control': 'must-revalidate, post-check=0, pre-check=0',
+				'Cache-Control': 'private',  # required for certain browsers,
+				'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'Content-Disposition': 'attachment; filename=\"%s\";' % file_name,
+				'Content-Transfer-Encoding': 'binary',
+				'Content-Length': len(response.data)
+			})
+
+			if not mimetype_tuple[1] is None:
+				response.update({
+					'Content-Encoding': mimetype_tuple[1]
+				})
+
+			response.headers = response_headers
+			response.set_cookie('fileDownload', 'true', path='/')
+			return response
+
+
+
+		except Exception, e:
+			return str(e)
+
+		
+		
+		
 
 

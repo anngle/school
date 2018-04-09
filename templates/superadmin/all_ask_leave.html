@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}所有用户{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
+<div class="col-sm-12">
+<a type="button" class="btn btn-default" href="{{url_for('superadmin.all_ask_leave',toexcel='toexcel')}}">导出数据</a>
+<div class="table-responsive">
+  <table class="table">
+    <caption>所有请假信息</caption>
+    <thead>
+      <tr>
+      	<th>学校</th>
+      	<th>年级</th>
+      	<th>班级</th>
+        <th>学生</th>     
+        <th>请假时间</th>
+        <th>归来时间</th>
+        <th>批准时间</th>
+        <th>请假原因</th>
+        <th>状态</th>
+        <th>创建时间</th>
+      </tr>
+    </thead>
+    <tbody>
+    {%for i in leave%}
+      <tr>
+        <td>{{i[9]}}</td>
+        <td>{{i[8]}}</td>
+        <td>{{i[10]}}</td>
+        <td>{{i[7]}}</td>
+        <td>{{i[0]}}到{{i[1]}}</td>
+        <td>{{i[2]}}</td>
+        <td>{{i[3]}}</td>
+        <td>{{i[5]}}</td>
+        <td>{{i[4]}}</td>
+        <td>{{i[6]}}</td>
+       </tr>
+    {%endfor%}
+  </table>
+</div>
+
+</div>
+{% endblock %}
