@@ -10,20 +10,57 @@
 <div class="container">
     <div class="row">
         <div class="col-xs-6">
-            <div class="col-xs-12" style="background-color:#FFF8DC;height:500px;font-size:6rem;line-height: 500px;" id='scan_qr'>
+            <div class="col-xs-12" style="background-color:#FFF8DC;height:500px;font-size:6rem;line-height: 500px;display:block" id='scan_qr'>
                 <!-- <h1 ></h1> -->
                 <p class="text-center" >请扫描二维码</p>
             </div>
 
             <div class="col-xs-12" style="background-color:#7CCD7C;height:500px;font-size:6rem;line-height: 500px;display:none" id='ok_scan_qr'>
                 <!-- <h1 ></h1> -->
-                <p class="text-center" >已扫描待验证</p>
+                <p class="text-center" id="pass">已扫描待验证</p>
             </div>
 
-            <div class="col-xs-12" style="background-color:#87CEFA;height:500px;font-size:6rem;line-height: 500px;display:none" id='pass_qr'>
+            <div class="col-xs-12" style="background-color:#87CEFA;height:500px;font-size:6rem;line-height: 500px;display:none" id='waiting_qr'>
                 <!-- <h1 ></h1> -->
-                <p class="text-center" >验证已通过</p>
+                <p class="text-center"  id="waiting">等待验证中。。。</p>
             </div>
+
+            <div class="col-xs-12" style="height:500px;display:none" id='pass_qr'>
+                <div class="col-xs-12">
+                    <div class="col-xs-4"><h1>姓名：</h1></div>
+                    <div class="col-xs-8"><h1 id="name">&nbsp;</h1></div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="col-xs-4"><h1>开始：</h1></div>
+                    <div class="col-xs-8" style="margin-top:2.0rem;">
+                        <input type="text" class="form-control" id="start_time" name="start_time">
+                        <input type="hidden" value="" id="student_id">
+                    </div>
+
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="col-xs-4"><h1>结束：</h1></div>
+                    <div class="col-xs-8" style="margin-top:2.0rem;"><input type="text" class="form-control" id="end_time" name="end_time" ></div>
+                </div>
+
+                <div class="col-xs-12">
+                    <div class="col-xs-4"><h1>事由：</h1></div>
+                    <div class="col-xs-8" style="margin-top:2.0rem;"><input type="text" class="form-control" id="note" name="note"></div>
+                </div>
+
+                <div class="col-xs-12">&nbsp;</div>
+
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-info btn-lg btn-block" id="submit">提交</button>
+                </div>
+                
+                
+                
+            </div>
+
+            
 
             <div class="col-xs-12" id="str" style="color:#ffffff"></div>
 
@@ -41,15 +78,10 @@
                             <h3 class="panel-title">等待班主任同意</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            {%for i in ask_leave0%}
+                            <div class="col-xs-3">{{i[1].name}}</div>
+                            {%endfor%}
+                           
                         </div>
                     </div>
 
@@ -58,15 +90,9 @@
                             <h3 class="panel-title">班主任已批准</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            {%for i in ask_leave1%}
+                            <div class="col-xs-3">{{i[1].name}}</div>
+                            {%endfor%}
                         </div>
                     </div>
 
@@ -75,18 +101,9 @@
                             <h3 class="panel-title">请假中,已离校</h3>
                         </div>
                         <div class="panel-body">
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
-                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            {%for i in ask_leave4%}
+                            <div class="col-xs-3">{{i[1].name}}</div>
+                            {%endfor%}
                         </div>
                     </div>
 
@@ -98,6 +115,7 @@
     </div>
 </div>
 <script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+<script type="text/javascript" src="{{url_for('static',filename='laydate/laydate.js')}}"></script>
 <script type="text/javascript">
 function keyUp(e) {
    var currKey=0,e=e||event;
@@ -111,32 +129,100 @@ function keyUp(e) {
         document.getElementById('scan_qr').style.display = 'none';
         document.getElementById('ok_scan_qr').style.display = 'block';
         setTimeout(function(){
-            document.getElementById('ok_scan_qr').style.display = 'none';
-            document.getElementById('pass_qr').style.display = 'block';
-            
+
             $.ajax({
                 url: "{{url_for('user.doorkeeper_main_json',_external=True)}}?s="+str,
                 dataType: 'json',
                 jsonp: 'info', //回调函数的参数名(键值)key
                 // jsonpCallback: 'fun', //回调函数名(值) value
                 beforeSend:function(){
-                    $('#word').append('<div>正在加载。。。</div>');
+                    document.getElementById('ok_scan_qr').style.display = 'none';
+                    document.getElementById('waiting_qr').style.display = 'block';
                 },
                 success:function(data){
-                    alert(data.info)
+                    if(data.info[0]==0){
+                        document.getElementById('waiting_qr').style.display = 'none';
+                        document.getElementById('pass_qr').style.display = 'block';
+
+                        document.getElementById('name').innerHTML = data.info[1][1]
+                        $('#student_id').val(data.info[1][0]);
+
+                    }
+                    if(data.info[0]==1){
+                        document.getElementById('waiting').innerHTML = data.info[1];
+                        setTimeout(function(){
+                            location.reload();
+                        },5000)
+                    }
+                    if(data.info[0]==2){
+                        document.getElementById('waiting_qr').style.display = 'none';
+                        document.getElementById('ok_scan_qr').style.display = 'block';
+                        document.getElementById('pass').innerHTML = data.info[1];
+
+                        setTimeout(function(){
+                            location.reload();
+                        },5000)
+                        
+                    }
+                    
 
                 },
-                error:function(){
+                error:function(data){
                     
                 }
 
             })
-        },500);
+        },1000);
         document.getElementById('str').innerHTML = '';
    }
    
 }
 document.onkeyup = keyUp;
+
+$(document).on('click','#submit',function(){
+    
+        var student_id = $('#student_id').val();
+        var start_time = $('#start_time').val();
+        var end_time = $('#end_time').val();
+        var note = $('#note').val();
+        // $('#texe').trigger('click');触发搜索事件
+        var data = {
+            data: JSON.stringify({
+                "student_id":student_id,
+                "start_time":start_time,
+                "end_time":end_time,
+                "note":note,
+            })
+        };
+
+        $.ajax({
+            url: '{{url_for('user.send_leave_json',_external=True)}}',
+            data: data,
+            type: 'POST',
+            success: function(response) {
+
+                alert(response.info);
+                location.reload();
+                // $('#student_id').val('');
+                // $('#start_time').val('');
+                // $('#end_time').val('');
+                // $('#note').val('');
+                // document.getElementById('name').innerHTML = '';
+                // document.getElementById('str').innerHTML = '';
+            },
+            
+        });
+        
+})
+
+laydate.render({
+  elem: '#start_time' 
+  ,type: 'datetime'
+});
+laydate.render({
+  elem: '#end_time' 
+  ,type: 'datetime'
+});
 </script>
 {% endblock %}
 

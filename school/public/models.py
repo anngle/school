@@ -107,11 +107,13 @@ class AskLeave(SurrogatePK, Model):
 	ask_start_time = Column(db.DateTime)
 	#请假结束时间
 	ask_end_time = Column(db.DateTime)
+	#离校事假
+	leave_time = Column(db.DateTime)
 	#回来时间`
 	back_leave_time = Column(db.DateTime,default=None)
 	#批准时间`
 	charge_time = Column(db.DateTime)
-	#是否批准 0发起  1批准  2拒绝 3完成
+	#是否批准 0发起  1批准  2拒绝 3完成 4已离校
 	charge_state = Column(db.Integer,default=0)
 	#请假原因
 	why = Column(db.UnicodeText)

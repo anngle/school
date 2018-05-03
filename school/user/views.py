@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash, session, jsonify
+from flask import Blueprint, render_template, url_for, current_app, redirect,\
+	request,flash, session, jsonify, abort
 from flask_login import login_required,login_user,current_user
-import time,random
+import time,random,json
 from sqlalchemy import desc
 from flask_wechatpy import oauth
 
@@ -12,7 +13,7 @@ from .models import User,Role,Permission,Roles
 from ..public.models import *
 from ..decorators import permission_required
 from log import logger
-from ..extensions import wechat
+from ..extensions import wechat,csrf_protect
 from .forms import SendLeaveForm
 from school.utils import templated,flash_errors
 
@@ -199,6 +200,55 @@ def send_leave_post():
 	return redirect(url_for('.my_leave'))
 
 
+#门卫主界面请假
+@blueprint.route('/send_leave_json',methods=['POST'])
+@csrf_protect.exempt
+@login_required
+@permission_required(Permission.LEAVE)
+def send_leave_json():
+	data = json.loads(request.form.get('data'))
+	student = Student.query.get_or_404(data['student_id'])
+
+	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,4])).first():
+		return jsonify({'info':'该请假人已经存在请假申请，不能再次发起申请。'})
+
+	try:
+		banzhuren = student.classes.teacher.users
+	except Exception as e:
+		return jsonify({'info':'该班级未设置班主任。不能请假'})
+
+
+	ask = AskLeave.create(
+		send_ask_user=current_user,
+		ask_student = student,
+		charge_ask_user = banzhuren,
+		ask_start_time = data['start_time'],
+		ask_end_time = data['end_time'],
+		why = data['note']
+	)
+	
+	#此处增加微信通知班主任和家长
+	try:
+		teacher_wechat = student.classes.teacher.users.wechat_id
+		msg_title = u'您的学生：%s发起了请假,\n'%student.name
+		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
+		wechat.message.send_text(teacher_wechat,msg_title)
+	except Exception as e:
+		logger.error(u"请假，通知教师错误。微信通知错误"+str(e))
+
+	try:
+		teacher_wechat = student.parents.users.wechat_id
+		msg_title = u'您的小孩：%s发起了请假,\n'%student.name
+		msg_title += u'请假时间：%s至%s \n请假原因：%s'%(str(ask_start_time),str(ask_end_time),why)
+		wechat.message.send_text(teacher_wechat,msg_title)
+	except Exception as e:
+		logger.error(u"请假，通知家长错误。微信通知错误"+str(e))
+
+
+	return jsonify({'info':'请假成功。'})
+	
+
+
 #我的请假
 @blueprint.route('/my_leave')
 @templated()
@@ -232,7 +282,7 @@ def my_senf_leave():
 	return dict(askleave=askleave)
 
 
-
+#同意请假
 @blueprint.route('/charge_ask_leave/<int:id>')
 @login_required
 @permission_required(Permission.ALLOW_LEAVE)
@@ -280,7 +330,24 @@ def change_return_leave(id=0):
 @blueprint.route('/doorkeeper_main')
 @templated()
 def doorkeeper_main():
-	return dict()
+	ask_leave = AskLeave.query\
+		.with_entities(AskLeave,Student)\
+		.join(Student,Student.id==AskLeave.ask_users)\
+		.filter(AskLeave.send_ask_user==current_user)\
+		.filter(AskLeave.charge_state.in_([0,1,4])).all()	
+	ask_leave0 = []
+	ask_leave1 = []
+	ask_leave4 = []
+	for i in ask_leave:
+		if i[0].charge_state == 0 :
+			ask_leave0.append(i)
+		if i[0].charge_state == 1 :
+			ask_leave1.append(i)
+		if i[0].charge_state == 4 :
+			ask_leave4.append(i)
+
+
+	return dict({'ask_leave0':ask_leave0,'ask_leave1':ask_leave1,'ask_leave4':ask_leave4})
 
 
 #门卫主页扫描获取学生信息
@@ -288,8 +355,26 @@ def doorkeeper_main():
 @templated()
 def doorkeeper_main_json():
 	stid = request.args.get('s')
-	print(stid)
-	return jsonify({'info':14})
+	if stid[0:1] == 'S':
+		student_id = stid[1:]
+		student = Student.query.get_or_404(student_id)
+		ask_leave = AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,4])).first()
+		
+		if not ask_leave:
+			return jsonify({'info':[0,[student.id,student.name]]})
+
+		if ask_leave.charge_state == 0:
+			return jsonify({'info':[1,'等待班主任确认中。']})
+		elif ask_leave.charge_state == 1:
+			ask_leave.update(charge_state=4,leave_time=dt.datetime.now())
+			return jsonify({'info':[2,'已同意可离校。']})
+		elif ask_leave.charge_state == 4:
+			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
+			return jsonify({'info':[2,'已归来请假完成']})
+
+		return jsonify({'info':[0,[student.id,student.name]]})
+
+	abort(404)
 
 
 
