@@ -11,7 +11,7 @@
  <br>学校列表：
 	{%for i in school%}
 	<div style="border:2px red solid;margin-top:10px;padding:5px;">
-	{{i.name}},{{i.active}},{{i.state}},{{i.created_at}}   <br>	
+	{{i.name}},启用：<a href="{{url_for('superadmin.change_active',id=i.id)}}">{{i.active}}</a>,状态：{{i.state}},{{i.created_at}}   <br>	
 	<a href="{{url_for('superadmin.add_grade',id=i.id)}}">添加年级</a>
 	<hr>年级列表：
 	{%for j in i.grades%}

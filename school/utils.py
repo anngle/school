@@ -4,10 +4,6 @@ from flask import flash,current_app,render_template,request
 import time,random,hashlib
 from functools import wraps
 
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 
 def flash_errors(form, category='warning'):
     """Flash all errors for a form."""
@@ -39,7 +35,7 @@ def create_file_name(f):
     username_str = str(int(str_time))
     for i in range(6):
         username_str += random.choice(choice_str)
-    filename = hashlib.md5(username_str).hexdigest()[:32]+'.'+f.filename.rsplit('.', 1)[1]
+    filename = hashlib.md5(username_str.encode('utf-8')).hexdigest()[:32]+'.'+f.filename.rsplit('.', 1)[1]
     return filename
 
 def allowed_file(filename):

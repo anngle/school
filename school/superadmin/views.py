@@ -5,7 +5,7 @@ from .models import SystemVersion
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import Headers
-import xlrd, sys, datetime, os, xlsxwriter, StringIO,mimetypes
+import xlrd, sys, datetime, os, xlsxwriter,mimetypes
 
 from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave
 from ..user.models import User,Role
@@ -14,8 +14,10 @@ from school.database import db
 
 from log import logger
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
@@ -172,7 +174,7 @@ def set_teachers():
 	
 	classes = Classes.query.get_or_404(classes_id)
 	
-	classes.update(teacher=user.charge_teacher)
+	classes.update(teacher=user.teacher)
 	flash(u'设置班主任成功.','success')
 	return redirect(url_for('.show_classes',id=classes_id))
 
@@ -187,6 +189,7 @@ def add_student():
 	classes = Classes.query.get_or_404(classes_id)
 
 	try:
+		print(files.filename)
 		filename = secure_filename(files.filename)
 		filename = create_file_name(files)
 		dataetime = datetime.datetime.today().strftime('%Y%m%d')
@@ -195,9 +198,11 @@ def add_student():
 			os.makedirs(current_app.config['UPLOADED_PATH']+file_dir)
 		if  allowed_file(files.filename):
 			files.save(current_app.config['UPLOADED_PATH'] +file_dir+filename)
-				
-		filedata = xlrd.open_workbook(current_app.config['UPLOADED_PATH'] +file_dir+filename,encoding_override='utf-8')
+		
+
+		filedata = xlrd.open_workbook(current_app.config['UPLOADED_PATH'] +file_dir+filename)
 		table = filedata.sheets()[0]
+
 		message =""
 		try:
 			if table.col(0)[0].value.strip() != u'学号':
@@ -210,7 +215,7 @@ def add_student():
 			if message !="":
 				flash(message)
 				return redirect(url_for('.show_classes',id=classes_id))
-		except Exception, e:
+		except Exception as e:
 			flash(u'excel文件操作错误：%s'%str(e))
 			return redirect(url_for('.show_classes',id=classes_id))
 
@@ -231,7 +236,7 @@ def add_student():
 			db.session.commit()
 		flash(u'添加完成')
 		return redirect(url_for('.show_classes',id=classes_id))
-	except Exception, e:
+	except Exception as e:
 		flash(u'excel文件读取错误：%s'%str(e))
 		return redirect(url_for('.show_classes',id=classes_id))
 	
@@ -333,8 +338,20 @@ def all_ask_leave(toexcel=''):
 
 
 
-		except Exception, e:
+		except Exception as e:
 			return str(e)
+
+		
+
+@blueprint.route('/change_active/<int:id>')
+def change_active(id=0):
+	school = School.query.get_or_404(id)
+	if school.active:
+		school.update(active=False)
+	else:
+		school.update(active=True)
+	flash(u'状态更新成功。')
+	return redirect(url_for('.all_school'))
 
 		
 		

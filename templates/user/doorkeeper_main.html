@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}请假系统{% endblock %}
+{% block body %}
+<nav class="navbar navbar-inverse text-center" role="navigation" >  
+        <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >主页-请假系统</h3>       
+</nav>
+<style type="text/css">
+    body{}
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="col-xs-12" style="background-color:#FFF8DC;height:500px;font-size:6rem;line-height: 500px;" id='scan_qr'>
+                <!-- <h1 ></h1> -->
+                <p class="text-center" >请扫描二维码</p>
+            </div>
+
+            <div class="col-xs-12" style="background-color:#7CCD7C;height:500px;font-size:6rem;line-height: 500px;display:none" id='ok_scan_qr'>
+                <!-- <h1 ></h1> -->
+                <p class="text-center" >已扫描待验证</p>
+            </div>
+
+            <div class="col-xs-12" style="background-color:#87CEFA;height:500px;font-size:6rem;line-height: 500px;display:none" id='pass_qr'>
+                <!-- <h1 ></h1> -->
+                <p class="text-center" >验证已通过</p>
+            </div>
+
+            <div class="col-xs-12" id="str" style="color:#ffffff"></div>
+
+        </div>
+
+        <div class="col-xs-6">
+            <div class="panel panel-primary" style="height:auto;">
+                <div class="panel-heading">
+                    <h3 class="panel-title">请假信息</h3>
+                </div>
+                <div class="panel-body">
+
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">等待班主任同意</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">班主任已批准</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-warning">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">请假中,已离校</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                            <div class="col-xs-4">张三[高一(3班)]</div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+<script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+<script type="text/javascript">
+function keyUp(e) {
+   var currKey=0,e=e||event;
+   currKey=e.keyCode||e.which||e.charCode; //按键码
+   var keyName = String.fromCharCode(currKey); //字符
+
+   if(currKey!=13){
+        document.getElementById('str').innerHTML += keyName;
+   }else{
+        var str = document.getElementById('str').innerHTML;
+        document.getElementById('scan_qr').style.display = 'none';
+        document.getElementById('ok_scan_qr').style.display = 'block';
+        setTimeout(function(){
+            document.getElementById('ok_scan_qr').style.display = 'none';
+            document.getElementById('pass_qr').style.display = 'block';
+            
+            $.ajax({
+                url: "{{url_for('user.doorkeeper_main_json',_external=True)}}?s="+str,
+                dataType: 'json',
+                jsonp: 'info', //回调函数的参数名(键值)key
+                // jsonpCallback: 'fun', //回调函数名(值) value
+                beforeSend:function(){
+                    $('#word').append('<div>正在加载。。。</div>');
+                },
+                success:function(data){
+                    alert(data.info)
+
+                },
+                error:function(){
+                    
+                }
+
+            })
+        },500);
+        document.getElementById('str').innerHTML = '';
+   }
+   
+}
+document.onkeyup = keyUp;
+</script>
+{% endblock %}
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """User views."""
-from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash, session
+from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash, session, jsonify
 from flask_login import login_required,login_user,current_user
 import time,random
 from sqlalchemy import desc
@@ -39,7 +39,6 @@ def set_roles():
 @login_required
 def set_roles_post():
 
-	logger.info(u'doork0')
 
 	school_id = request.form.get('school_id','0')
 	role_id = request.form.get('role_id','0')
@@ -80,7 +79,6 @@ def set_roles_post():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name+'的家长')
 		flash(u'您已设置角色为“%s”的家长。'%name,'success')
 	#门卫
-	logger.info(u'doork1')
 	if int(role_id)==3:
 		logger.info(u'doork2')
 		if verify != current_app.config['REGISTERVERIFY']:
@@ -123,7 +121,7 @@ def send_leave_post():
 	if not number:
 		try:
 			number = current_user.student.number
-		except Exception, e:
+		except Exception as e:
 			flash(u'请输入学号')
 			return redirect(url_for('.members'))
 		
@@ -161,7 +159,7 @@ def send_leave_post():
 
 	try:
 		banzhuren = student.classes.teacher.users
-	except Exception, e:
+	except Exception as e:
 		flash(u'该班级未设置班主任。不能请假','danger')
 		return redirect(url_for('.members'))
 	
@@ -180,7 +178,7 @@ def send_leave_post():
 		msg_title = u'您的学生：%s发起了请假,\n'%student.name
 		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
 		wechat.message.send_text(teacher_wechat,msg_title)
-	except Exception, e:
+	except Exception as e:
 		logger.error(u"请假，通知教师错误。微信通知错误"+str(e))
 
 	try:
@@ -188,7 +186,7 @@ def send_leave_post():
 		msg_title = u'您的小孩：%s发起了请假,\n'%student.name
 		msg_title += u'请假时间：%s至%s \n请假原因：%s'%(str(ask_start_time),str(ask_end_time),why)
 		wechat.message.send_text(teacher_wechat,msg_title)
-	except Exception, e:
+	except Exception as e:
 		logger.error(u"请假，通知家长错误。微信通知错误"+str(e))
 
 	
@@ -276,6 +274,23 @@ def change_return_leave(id=0):
 		flash(u'错误。没有该请假申请，或已完成。','danger')
 
 	return redirect(url_for('.return_leave'))
+
+
+#门卫界面
+@blueprint.route('/doorkeeper_main')
+@templated()
+def doorkeeper_main():
+	return dict()
+
+
+#门卫主页扫描获取学生信息
+@blueprint.route('/doorkeeper_main_json')
+@templated()
+def doorkeeper_main_json():
+	stid = request.args.get('s')
+	print(stid)
+	return jsonify({'info':14})
+
 
 
 #自动注册 
