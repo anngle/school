@@ -397,6 +397,7 @@ def user_login_post():
 	password = request.form.get('password','0')
 	user = User.query.filter_by(username=username).first()
 	print(user)
+	print(password)
 	print(user.check_password(password))
 	if user and  user.check_password(password):
 		login_user(user,True)
