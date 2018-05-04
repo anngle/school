@@ -117,7 +117,7 @@ def token_post():
 
         #修改密码
         if event_str == 'pd':
-            user.update(password=leave_id)
+            user.set_password(password=leave_id)
             reply=TextReply(content=u'密码已修改。', message=msg)
             return reply
 
