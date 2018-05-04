@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
-from school.extensions import csrf_protect,wechat
+from school.extensions import csrf_protect,wechat,db
 
 import datetime as dt
 from ..public.models import AskLeave
@@ -118,6 +118,8 @@ def token_post():
         #修改密码
         if event_str == 'pd':
             user.set_password(password=leave_id)
+            db.session.add(user)
+            db.session.commit()
             reply=TextReply(content=u'密码已修改。', message=msg)
             return reply
 
