@@ -330,6 +330,10 @@ def change_return_leave(id=0):
 @blueprint.route('/doorkeeper_main')
 @templated()
 def doorkeeper_main():
+
+	if not current_user.is_authenticated:
+		return redirect(url_for('.user_login',next=request.endpoint))
+
 	ask_leave = AskLeave.query\
 		.with_entities(AskLeave,Student)\
 		.join(Student,Student.id==AskLeave.ask_users)\
@@ -354,6 +358,11 @@ def doorkeeper_main():
 @blueprint.route('/doorkeeper_main_json')
 @templated()
 def doorkeeper_main_json():
+
+	if not current_user.is_authenticated:
+		return jsonify({'info':[1,'登录已失效。']})
+
+
 	stid = request.args.get('s')
 	if stid[0:1] == 'S':
 		student_id = stid[1:]
@@ -376,6 +385,23 @@ def doorkeeper_main_json():
 
 	abort(404)
 
+
+@blueprint.route('/user_login')
+@templated()
+def user_login():
+	return dict(next=request.args.get('next'))
+
+@blueprint.route('/user_login',methods=['POST'])
+def user_login_post():
+	username = request.form.get('username','0')
+	password = request.form.get('password','0')
+	user = User.query.filter_by(username=username).first()
+	if user and  user.check_password(password):
+		login_user(user,True)
+		return redirect(url_for(request.args.get('next')) or url_for('public.home'))
+	else:
+		flash('信息输入错误，没有该用户。')
+		return redirect(url_for('.user_login'))
 
 
 #自动注册 
