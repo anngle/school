@@ -92,7 +92,6 @@ def token_post():
             reply=TextReply(content=u'您已同意该请假申请。', message=msg)
             return reply
 
-
         #不同意
         if event_str == 're':
             
@@ -109,6 +108,20 @@ def token_post():
             ask_leave.update(charge_state=2,charge_time=dt.datetime.now())
             reply=TextReply(content=u'您已拒绝该请假申请。', message=msg)
             return reply
+
+        #修改用户名
+        if event_str == 'un':
+            user.update(username=leave_id)
+            reply=TextReply(content='用户名已修改。', message=msg)
+            return reply
+
+        #修改密码
+        if event_str == 'pd':
+            user.update(password=leave_id)
+            reply=TextReply(content=u'密码已修改。', message=msg)
+            return reply
+
+
 
         reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
     try:
