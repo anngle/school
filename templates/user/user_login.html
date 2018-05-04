@@ -34,8 +34,7 @@
         {%for message in get_flashed_messages()%}
         <div class="panel-body">
             <div class="alert alert-warning alert-dismissable">
-                <button type="button" class="close" data-dismiss="alert"
-                        aria-hidden="true">
+                <button type="button" class="close" data-dismiss="alert"aria-hidden="true">
                     &times;
                 </button>
                 {{message}}
@@ -53,7 +52,7 @@
                     <form action="{{url_for('user.user_login_post',next=next)}}" method="post" role="form">
 
 
-                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                       <input type="hidden" name="csrf_token" value="{{csrf_token()}}" />
 
 
                         <div class="input-group input-group-md">
