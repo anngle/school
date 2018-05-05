@@ -23,6 +23,7 @@
     </head>
     
     <body>
+    {{current_user.is_authenticated}}  
     {%for message in get_flashed_messages()%}
     <div class="panel-body">
         <div class="alert alert-warning alert-dismissable">
