@@ -40,15 +40,16 @@ def set_roles():
 @login_required
 def set_roles_post():
 
-
 	school_id = request.form.get('school_id','0')
 	role_id = request.form.get('role_id','0')
 	number = request.form.get('number','0')
 	verify = request.form.get('verify','0')
 	phone = request.form.get('phone','0')
 	name = request.form.get('name','')
-	school = School.query.get_or_404(school_id)
 
+	print(school_id)
+	school = School.query.get_or_404(school_id)
+	print(school)
 	#教师
 	if int(role_id) ==1:
 		if verify != current_app.config['REGISTERVERIFY']:
