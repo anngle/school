@@ -19,7 +19,7 @@ cache = Cache()
 debug_toolbar = DebugToolbarExtension()
 wechat = Wechat()
 
-login_manager.session_protection ='strong'
+login_manager.session_protection ='basic'
 
 #自动注册
 login_manager.login_view = 'user.autoregister'
