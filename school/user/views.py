@@ -28,17 +28,19 @@ def members():
 	
 	return dict()
 
+@blueprint.route('/set_roles/<int:st>')
 @blueprint.route('/set_roles')
 @login_required
 @templated()
-def set_roles():
+def set_roles(st=''):
 	school = School.query.filter_by(active=True).order_by(desc('id')).all()
 	return dict(school=school)
 
 
+@blueprint.route('/set_roles/<int:st>',methods=["POST"])
 @blueprint.route('/set_roles',methods=["POST"])
 @login_required
-def set_roles_post():
+def set_roles_post(st=''):
 
 
 	school_id = request.form.get('school_id','0')
@@ -207,7 +209,17 @@ def send_leave_post():
 @permission_required(Permission.LEAVE)
 def send_leave_json():
 	data = json.loads(request.form.get('data'))
-	student = Student.query.get_or_404(data['student_id'])
+
+	student = Student.query\
+		.join(Classes,Classes.id==Student.classesd) \
+		.join(Grade,Grade.id==Classes.grades) \
+		.join(School,School.id==Grade.school) \
+		.filter(School.id==current_user.school)\
+		.filter(Student.id==data['student_id'])\
+		.first()
+
+	if not student:
+		return jsonify({'info':'没有该学生。'})
 
 	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,4])).first():
 		return jsonify({'info':'该请假人已经存在请假申请，不能再次发起申请。'})
