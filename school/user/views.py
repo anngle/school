@@ -31,14 +31,14 @@ def members():
 @blueprint.route('/set_roles')
 @login_required
 @templated()
-def set_roles(st=''):
+def set_roles():
 	school = School.query.filter_by(active=True).order_by(desc('id')).all()
 	return dict(school=school)
 
 
 @blueprint.route('/set_roles_post',methods=["POST"])
 @login_required
-def set_roles_post(st=''):
+def set_roles_post():
 
 
 	school_id = request.form.get('school_id','0')
