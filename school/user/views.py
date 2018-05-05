@@ -37,7 +37,7 @@ def set_roles():
 
 
 @blueprint.route('/set_roles_post',methods=["POST"])
-# @login_required
+@login_required
 def set_roles_post():
 
 	school_id = request.form.get('school_id','0')
@@ -47,10 +47,7 @@ def set_roles_post():
 	phone = request.form.get('phone','0')
 	name = request.form.get('name','')
 
-	print(school_id)
 	school = School.query.get_or_404(school_id)
-	print(school)
-	print(current_user.is_authenticated)
 	#教师
 	if int(role_id) ==1:
 		if verify != current_app.config['REGISTERVERIFY']:
