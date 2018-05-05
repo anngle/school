@@ -232,8 +232,8 @@ def send_leave_json():
 		teacher_wechat = student.classes.teacher.users.wechat_id
 		msg_title = u'您的学生：%s发起了请假,\n'%student.name
 		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'\
-		%(str(data['start_time']),str(data['end_time']),data['note'],ask.id,ask.id)
-			wechat.message.send_text(teacher_wechat,msg_title)
+			%(str(data['start_time']),str(data['end_time']),data['note'],ask.id,ask.id)
+		wechat.message.send_text(teacher_wechat,msg_title)
 	except Exception as e:
 		logger.error(u"请假，通知教师错误。微信通知错误"+str(e))
 
@@ -417,8 +417,6 @@ def autoregister():
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
 	else:
 		user = []
-	logger.info('autoregister:%s'%wechat_id)
-	logger.info('autoregister:user%s'%user)
 	if user:
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
