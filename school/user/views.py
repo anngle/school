@@ -37,7 +37,7 @@ def set_roles():
 
 
 @blueprint.route('/set_roles_post',methods=["POST"])
-@login_required
+# @login_required
 def set_roles_post():
 
 	school_id = request.form.get('school_id','0')
