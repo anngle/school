@@ -50,6 +50,7 @@ def set_roles_post():
 	print(school_id)
 	school = School.query.get_or_404(school_id)
 	print(school)
+	print(current_user.is_authenticated)
 	#教师
 	if int(role_id) ==1:
 		if verify != current_app.config['REGISTERVERIFY']:
