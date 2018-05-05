@@ -28,7 +28,6 @@ def members():
 	
 	return dict()
 
-@blueprint.route('/set_roles/<int:st>')
 @blueprint.route('/set_roles')
 @login_required
 @templated()
@@ -37,8 +36,7 @@ def set_roles(st=''):
 	return dict(school=school)
 
 
-@blueprint.route('/set_roles/<int:st>',methods=["POST"])
-@blueprint.route('/set_roles',methods=["POST"])
+@blueprint.route('/set_roles_post',methods=["POST"])
 @login_required
 def set_roles_post(st=''):
 
@@ -105,7 +103,7 @@ def send_leave():
 	return dict(form=form)
 
 
-@blueprint.route('/send_leave',methods=['POST'])
+@blueprint.route('/send_leave_post',methods=['POST'])
 @login_required
 @permission_required(Permission.LEAVE)
 def send_leave_post():
