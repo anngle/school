@@ -22,7 +22,8 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"发起请假",
-                "url":"http://school.anxingwuye.com/users/send_leave"
+                "url":"%s"%url_for('user.send_leave',_external=True)
+                # "url":"http://school.anxingwuye.com/users/send_leave"
             },
         ]},\
 
