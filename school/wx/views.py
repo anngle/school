@@ -56,7 +56,6 @@ def token_get():
     nonce = request.args.get('nonce','')
     echostr = request.args.get('echostr','')
     token = current_app.config['SCHOOL_WECHAT_TOKEN']
-    print(token)
     sortlist = [token, timestamp, nonce]
     sortlist.sort()
     sha1 = hashlib.sha1()
@@ -143,7 +142,11 @@ def token_post():
 
     #关注事件
     if msg.event == 'subscribe':
-        createmenu()
+        try:
+            createmenu()
+        except Exception as e:
+            print(str(e))
+        
         reply = TextReply(content=u'欢迎关注。O(∩_∩)O哈！', message=msg)
     #扫描二维码关注事件
     if msg.event == 'subscribe_scan':
