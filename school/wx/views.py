@@ -4,8 +4,8 @@ from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 from school.extensions import csrf_protect,wechat,db
 
-import click
-from flask.cli import with_appcontext
+# import click
+# from flask.cli import with_appcontext
 
 
 
@@ -16,15 +16,13 @@ from ..user.models import User
 blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
 
-@click.command
-@with_appcontext
 def createmenu():
     wechat.menu.create({"button":[
         {"type":"view","name":u"请假","sub_button":[
             {
                 "type":"view",
                 "name":u"发起请假",
-                "url":"http://school.anaf.cn/users/send_leave"
+                "url":"http://school.anxingwuye.com/users/send_leave"
             },
         ]},\
 
@@ -32,12 +30,12 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://school.anaf.cn/users'
+                "url":'http://school.anxingwuye.com/users'
             },
             {
                 "type":"view",
                 "name":u"平台简介",
-                "url":'http://school.anaf.cn/'
+                "url":'http://school.anxingwuye.com/'
             },
         ]},\
         
