@@ -23,7 +23,6 @@ def createmenu():
                 "type":"view",
                 "name":u"发起请假",
                 "url":"%s"%url_for('user.send_leave',_external=True)
-                # "url":"http://school.anxingwuye.com/users/send_leave"
             },
         ]},\
 
@@ -31,12 +30,12 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://school.anxingwuye.com/users'
+                "url":'%s'%url_for('user.members',_external=True)
             },
             {
                 "type":"view",
                 "name":u"平台简介",
-                "url":'http://school.anxingwuye.com/'
+                "url":'%s'%url_for('public.home')
             },
         ]},\
         
