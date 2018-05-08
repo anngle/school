@@ -13,7 +13,7 @@ import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
+blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 
 def createmenu():
@@ -52,7 +52,6 @@ def token_get():
     nonce = request.args.get('nonce','')
     echostr = request.args.get('echostr','')
     token = current_app.config['SCHOOL_WECHAT_TOKEN']
-    print(token)
     sortlist = [token, timestamp, nonce]
     sortlist.sort()
     sha1 = hashlib.sha1()
