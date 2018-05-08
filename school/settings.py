@@ -23,7 +23,7 @@ class Config(object):
 
     #测试号
     WECHAT_APPID = os.environ.get('SCHOOL_WECHAT_APPID') or 'wxb27de34ba5055b6b'
-    WECHAT_SECRET = os.environ.get('SCHOOL_WECHAT_SECRET') or '1ea339c37b7e356def3d9aea0da65d85'
+    WECHAT_SECRET = os.environ.get('SCHOOL_WECHAT_SECRET') or '1ea339c37b7e356ded9aea0da65d85'
     WECHAT_TOKEN = os.environ.get('SCHOOL_WECHAT_TOKEN') or 'wx_get_token_1234567890acb'
 
 
