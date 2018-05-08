@@ -13,32 +13,37 @@ blueprint = Blueprint('wx', __name__, url_prefix='/ ')
 
 
 def createmenu():
-    wechat.menu.create({"button":[
-        {"type":"view","name":u"请假","sub_button":[
-            {
-                "type":"view",
-                "name":u"发起请假",
-                # "url":"http://school.anaf.cn/users/send_leave"
-                "url":"%s"%url_for('user.send_leave',_external=True)
-            },
-        ]},\
+    try:
+    
+        wechat.menu.create({"button":[
+            {"type":"view","name":u"请假","sub_button":[
+                {
+                    "type":"view",
+                    "name":u"发起请假",
+                    # "url":"http://school.anaf.cn/users/send_leave"
+                    "url":"%s"%url_for('user.send_leave',_external=True)
+                },
+            ]},\
 
-        {"type":"view","name":u"用户服务","sub_button":[
-            {
-                "type":"view",
-                "name":u"个人中心",
-                # "url":'http://school.anaf.cn/users'
-                "url":"%s"%url_for('user.members',_external=True)
-            },
-            {
-                "type":"view",
-                "name":u"平台简介",
-                "url":"%s"%url_for('public.home',_external=True)
-                # "url":'http://school.anaf.cn/'
-            },
-        ]},\
-        
-    ]})
+            {"type":"view","name":u"用户服务","sub_button":[
+                {
+                    "type":"view",
+                    "name":u"个人中心",
+                    # "url":'http://school.anaf.cn/users'
+                    "url":"%s"%url_for('user.members',_external=True)
+                },
+                {
+                    "type":"view",
+                    "name":u"平台简介",
+                    "url":"%s"%url_for('public.home',_external=True)
+                    # "url":'http://school.anaf.cn/'
+                },
+            ]},\
+            
+        ]})
+
+    except Exception as e:
+        print(str(e))
 
 
 
