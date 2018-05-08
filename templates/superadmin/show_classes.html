@@ -40,7 +40,7 @@
 	学生列表：
 	{%if classes.student%}
 	{%for i in classes.student%}
-	 <br>{{i.number}},{{i.name}} ,{%if i.sex%} 男{%else%}女{%endif%}
+	 <br>{{i.id}},{{i.number}},{{i.name}} ,{%if i.sex%} 男{%else%}女{%endif%}
 	{%endfor%}
 	{%endif%}
 </body>
