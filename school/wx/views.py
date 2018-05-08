@@ -8,7 +8,7 @@ import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
+blueprint = Blueprint('wx', __name__, url_prefix='/ ')
 
 
 
@@ -18,7 +18,8 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"发起请假",
-                "url":"http://school.anaf.cn/users/send_leave"
+                # "url":"http://school.anaf.cn/users/send_leave"
+                "url":"%s"%url_for('user.send_leave',_external=True)
             },
         ]},\
 
@@ -26,12 +27,14 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"个人中心",
-                "url":'http://school.anaf.cn/users'
+                # "url":'http://school.anaf.cn/users'
+                "url":"%s"%url_for('user.members',_external=True)
             },
             {
                 "type":"view",
                 "name":u"平台简介",
-                "url":'http://school.anaf.cn/'
+                "url":"%s"%url_for('public.home',_external=True)
+                # "url":'http://school.anaf.cn/'
             },
         ]},\
         
