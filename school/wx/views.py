@@ -35,7 +35,7 @@ def createmenu():
             {
                 "type":"view",
                 "name":u"平台简介",
-                "url":'%s'%url_for('public.home')
+                "url":'%s'%url_for('public.home',_external=True)
             },
         ]},\
         
