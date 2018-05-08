@@ -4,46 +4,44 @@ from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 from school.extensions import csrf_protect,wechat,db
 
+import click
+from flask.cli import with_appcontext
+
+
+
 import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/ ')
+blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
 
-
+@click.command
+@with_appcontext
 def createmenu():
-    try:
-    
-        wechat.menu.create({"button":[
-            {"type":"view","name":u"请假","sub_button":[
-                {
-                    "type":"view",
-                    "name":u"发起请假",
-                    # "url":"http://school.anaf.cn/users/send_leave"
-                    "url":"%s"%url_for('user.send_leave',_external=True)
-                },
-            ]},\
+    wechat.menu.create({"button":[
+        {"type":"view","name":u"请假","sub_button":[
+            {
+                "type":"view",
+                "name":u"发起请假",
+                "url":"http://school.anaf.cn/users/send_leave"
+            },
+        ]},\
 
-            {"type":"view","name":u"用户服务","sub_button":[
-                {
-                    "type":"view",
-                    "name":u"个人中心",
-                    # "url":'http://school.anaf.cn/users'
-                    "url":"%s"%url_for('user.members',_external=True)
-                },
-                {
-                    "type":"view",
-                    "name":u"平台简介",
-                    "url":"%s"%url_for('public.home',_external=True)
-                    # "url":'http://school.anaf.cn/'
-                },
-            ]},\
-            
-        ]})
-
-    except Exception as e:
-        print(str(e))
+        {"type":"view","name":u"用户服务","sub_button":[
+            {
+                "type":"view",
+                "name":u"个人中心",
+                "url":'http://school.anaf.cn/users'
+            },
+            {
+                "type":"view",
+                "name":u"平台简介",
+                "url":'http://school.anaf.cn/'
+            },
+        ]},\
+        
+    ]})
 
 
 
@@ -56,6 +54,7 @@ def token_get():
     nonce = request.args.get('nonce','')
     echostr = request.args.get('echostr','')
     token = current_app.config['SCHOOL_WECHAT_TOKEN']
+    print(token)
     sortlist = [token, timestamp, nonce]
     sortlist.sort()
     sha1 = hashlib.sha1()
@@ -142,11 +141,7 @@ def token_post():
 
     #关注事件
     if msg.event == 'subscribe':
-        try:
-            createmenu()
-        except Exception as e:
-            print(str(e))
-        
+        createmenu()
         reply = TextReply(content=u'欢迎关注。O(∩_∩)O哈！', message=msg)
     #扫描二维码关注事件
     if msg.event == 'subscribe_scan':
