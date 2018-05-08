@@ -32,7 +32,7 @@ class ProdConfig(Config):
 
     ENV = 'prod'
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('dev_school_database_url') or \
+    SQLALCHEMY_DATABASE_URI = os.environ.get('prod_school_database_url') or \
         'mysql://root:@127.0.0.1:3306/school'
     DEBUG_TB_ENABLED = False  # Disable Debug toolbar
 
@@ -45,7 +45,7 @@ class DevConfig(Config):
     DB_NAME = 'dev.db'
     # Put the db file in project root
     # DB_PATH = os.path.join(Config.PROJECT_ROOT, DB_NAME)
-    SQLALCHEMY_DATABASE_URI = os.environ.get('dev_school_database_url') or \
+    SQLALCHEMY_DATABASE_URI = os.environ.get('prod_school_database_url') or \
         'mysql://root:@127.0.0.1:3306/school'
     DEBUG_TB_ENABLED = True
     CACHE_TYPE = 'simple'  # Can be "memcached", "redis", etc.
