@@ -408,7 +408,7 @@ def doorkeeper_main_json():
 			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
 			try:
 				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
-				msg_title = '您的小孩归离校，请假结束。'
+				msg_title = '您的小孩已归校，请假结束。'
 				wechat.message.send_text(student_parent_wechat,msg_title)
 			except Exception as e:
 				logger.error("归校通知家长错误，微信通知错误"+str(e))
