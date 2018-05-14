@@ -8,7 +8,7 @@ import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wx')
+blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
 
 #关注公众号创建的菜单
