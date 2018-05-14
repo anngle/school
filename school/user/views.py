@@ -396,7 +396,7 @@ def doorkeeper_main_json():
 			return jsonify({'info':[1,'等待班主任确认中。']})
 		elif ask_leave.charge_state == 1:
 			if dt.datetime.now() < ask_leave.ask_start_time:
-				return jsonify({'info':[2,'未到请假时间']})
+				return jsonify({'info':[2,'未到请假开始时间']})
 			ask_leave.update(charge_state=4,leave_time=dt.datetime.now())
 			try:
 				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
@@ -408,9 +408,13 @@ def doorkeeper_main_json():
 			return jsonify({'info':[2,'已同意可离校。']})
 		elif ask_leave.charge_state == 4:
 			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
+
 			try:
 				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
-				msg_title = '您的小孩已归校，请假结束。'
+				if dt.datetime.now() > ask_leave.ask_end_time:
+					msg_title = '您的小孩已归校(超出请假结束时间)，请假结束。'
+				else:
+					msg_title = '您的小孩已归校，请假结束。'
 				wechat.message.send_text(student_parent_wechat,msg_title)
 			except Exception as e:
 				logger.error("归校通知家长错误，微信通知错误"+str(e))
