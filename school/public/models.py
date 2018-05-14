@@ -94,6 +94,7 @@ class Doorkeeper(SurrogatePK, Model):
 
 	user = reference_col('users')
 
+
 #请假列表
 class AskLeave(SurrogatePK, Model):
 	__tablename__ = 'ask_leave'

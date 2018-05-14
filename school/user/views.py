@@ -380,7 +380,7 @@ def doorkeeper_main():
 def doorkeeper_main_json():
 
 	if not current_user.is_authenticated:
-		return jsonify({'info':[1,'登录已失效。']})
+		return jsonify({'info':[1,'登录失效请刷新']})
 
 
 	stid = request.args.get('s')
@@ -396,9 +396,23 @@ def doorkeeper_main_json():
 			return jsonify({'info':[1,'等待班主任确认中。']})
 		elif ask_leave.charge_state == 1:
 			ask_leave.update(charge_state=4,leave_time=dt.datetime.now())
+			try:
+				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
+				msg_title = '您的小孩已离校，请记得提醒您的小孩在请假结束前(%s)回到学校。'%ask_leave.ask_end_time
+				wechat.message.send_text(student_parent_wechat,msg_title)
+			except Exception as e:
+				logger.error("离校通知家长错误，微信通知错误"+str(e))
+
 			return jsonify({'info':[2,'已同意可离校。']})
 		elif ask_leave.charge_state == 4:
 			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
+			try:
+				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
+				msg_title = '您的小孩归离校，请假结束。'
+				wechat.message.send_text(student_parent_wechat,msg_title)
+			except Exception as e:
+				logger.error("归校通知家长错误，微信通知错误"+str(e))
+
 			return jsonify({'info':[2,'已归来请假完成']})
 
 		return jsonify({'info':[0,[student.id,student.name]]})
