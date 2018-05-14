@@ -395,6 +395,8 @@ def doorkeeper_main_json():
 		if ask_leave.charge_state == 0:
 			return jsonify({'info':[1,'等待班主任确认中。']})
 		elif ask_leave.charge_state == 1:
+			if dt.datetime.now() < ask_leave.ask_start_time:
+				return jsonify({'info':[2,'未到请假时间']})
 			ask_leave.update(charge_state=4,leave_time=dt.datetime.now())
 			try:
 				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
