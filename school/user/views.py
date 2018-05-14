@@ -417,7 +417,8 @@ def doorkeeper_main_json():
 
 		return jsonify({'info':[0,[student.id,student.name]]})
 
-	abort(404)
+	return jsonify({'info':[2,'输入错误']})
+
 
 
 @blueprint.route('/user_login')
