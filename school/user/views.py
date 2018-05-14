@@ -15,6 +15,7 @@ from ..decorators import permission_required
 from log import logger
 from ..extensions import wechat,csrf_protect
 from .forms import SendLeaveForm
+from .create_menu_info import *
 from school.utils import templated,flash_errors
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
@@ -57,6 +58,7 @@ def set_roles_post():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		ChargeTeacher.create(number=number,users=current_user)
 		flash(u'您已设置角色为“教师”。','success')
+		create_teacher_menu()
 	#学生
 	if int(role_id)==0:
 		role = Role.query.filter_by(name='Students').first()
@@ -67,6 +69,7 @@ def set_roles_post():
 		student.update(users=current_user)
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		flash(u'您已设置角色为“学生”。','success')
+		create_student_menu()
 	#家长
 	if int(role_id)==2:
 		role = Role.query.filter_by(name='Patriarch').first()
@@ -78,9 +81,9 @@ def set_roles_post():
 		student.update(parents=sp)
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name+'的家长')
 		flash(u'您已设置角色为“%s”的家长。'%name,'success')
+		create_patriarch_doorkeeper__menu()
 	#门卫
 	if int(role_id)==3:
-		logger.info(u'doork2')
 		if verify != current_app.config['REGISTERVERIFY']:
 			flash(u'校验码错误','danger')
 			return redirect(url_for('public.home'))
@@ -88,6 +91,7 @@ def set_roles_post():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		Doorkeeper.create(number=number,users=current_user)
 		flash(u'您已设置角色为“门口保安”。','success')
+		create_patriarch_doorkeeper__menu()
 	
 	return redirect(url_for('public.home'))
 
@@ -141,22 +145,25 @@ def send_leave_post():
 		flash(u'该请假人已经存在请假申请，不能再次发起申请。','danger')
 		return redirect(url_for('.members'))
 
-	doork = student_role = Role.query.filter_by(name='Doorkeeper').first()
-	#如果不是门卫 则则判断其他角色
-	if current_user.roles!=doork:	
-		student_role = Role.query.filter_by(name='Students').first()
-		if current_user.roles==student_role:
+	roles = Role.query.all()
+	ask_state = 0
+
+	for i in roles:
+		if i == current_user.roles and i.name == 'Students':
 			if current_user !=student.users:
 				flash(u'你也是学生不能帮其他同学请假的哟。','danger')
 				return redirect(url_for('.members'))
 
-		if student_role!=current_user.roles:
-			if  student.parents:
-				patriarch_role = Role.query.filter_by(name='Patriarch').first()
-				if student.parents.users != current_user:
-					flash(u'您是家长只能给自己家的小孩请假哟。','danger')
-					return redirect(url_for('.members'))
+		if i == current_user.roles and i.name == 'Patriarch':
+			if student.parents.users != current_user:
+				flash(u'您是家长只能给自己家的小孩请假哟。','danger')
+				return redirect(url_for('.members'))
 
+		#如果为教师 默认同意 请假
+		if i == current_user.roles and i.name == 'Teacher':
+			ask_state = 1
+	
+	
 	try:
 		banzhuren = student.classes.teacher.users
 	except Exception as e:
@@ -169,17 +176,20 @@ def send_leave_post():
 		charge_ask_user = banzhuren,
 		ask_start_time = ask_start_time,
 		ask_end_time = ask_end_time,
-		why = why
+		why = why,
+		charge_state = ask_state
 	)
 	
 	#此处增加微信通知班主任和家长
-	try:
-		teacher_wechat = student.classes.teacher.users.wechat_id
-		msg_title = u'您的学生：%s发起了请假,\n'%student.name
-		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
-		wechat.message.send_text(teacher_wechat,msg_title)
-	except Exception as e:
-		logger.error(u"请假，通知教师错误。微信通知错误"+str(e))
+	#如果等于1 就是教师发起默认不 微信通知了
+	if ask_state !=1:
+		try:
+			teacher_wechat = student.classes.teacher.users.wechat_id
+			msg_title = u'您的学生：%s发起了请假,\n'%student.name
+			msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'%(str(ask_start_time),str(ask_end_time),why,ask.id,ask.id)
+			wechat.message.send_text(teacher_wechat,msg_title)
+		except Exception as e:
+			logger.error(u"请假，通知教师错误。微信通知错误"+str(e))
 
 	try:
 		teacher_wechat = student.parents.users.wechat_id
@@ -190,13 +200,13 @@ def send_leave_post():
 		logger.error(u"请假，通知家长错误。微信通知错误"+str(e))
 
 	
+	if ask_state !=1:
+		flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
 
-	flash(u'请假申请提交成功，请等待班主任(%s)的审核。'%banzhuren.first_name,'success')
+	# if current_user.roles==doork:	
+	# 	return redirect(url_for('.my_senf_leave'))
 
-	if current_user.roles==doork:	
-		return redirect(url_for('.my_senf_leave'))
-
-	return redirect(url_for('.my_leave'))
+	return redirect(url_for('.my_senf_leave'))
 
 
 #门卫主界面请假
@@ -430,7 +440,6 @@ def autoregister():
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
 
-	logger.info(u'微信ID:%s,已经进入'%wechat_id)
 
 	choice_str = 'ABCDEFGHJKLNMPQRSTUVWSXYZ'
 	username_str = ''

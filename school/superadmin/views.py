@@ -173,7 +173,6 @@ def set_teachers():
 		return redirect(url_for('.show_classes',id=classes_id))
 	
 	classes = Classes.query.get_or_404(classes_id)
-	
 	classes.update(teacher=user.teacher)
 	flash(u'设置班主任成功.','success')
 	return redirect(url_for('.show_classes',id=classes_id))
@@ -189,7 +188,6 @@ def add_student():
 	classes = Classes.query.get_or_404(classes_id)
 
 	try:
-		print(files.filename)
 		filename = secure_filename(files.filename)
 		filename = create_file_name(files)
 		dataetime = datetime.datetime.today().strftime('%Y%m%d')

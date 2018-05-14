@@ -7,7 +7,7 @@ from school.extensions import login_manager
 from school.public.forms import LoginForm
 from school.user.forms import RegisterForm
 from school.user.models import User
-from school.utils import flash_errors
+from school.utils import flash_errors,templated
 
 blueprint = Blueprint('public', __name__)
 
@@ -23,6 +23,20 @@ def load_user(user_id):
 def home():
     """Home page."""
     return render_template('public/home.html')
+
+
+@blueprint.route('/user_info')
+@templated()
+def user_info():
+    return dict()
+    
+
+
+
+@blueprint.route('/introduction')
+@templated()
+def introduction():
+    return dict()
     
 
 

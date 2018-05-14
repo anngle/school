@@ -20,8 +20,8 @@ class Roles:
     Students = Permission.LEAVE         #学生
     Doorkeeper = Permission.LEAVE|Permission.RETURN_LEAVE       #门卫
     Patriarch = Permission.LEAVE        #家长
-    Teacher = Permission.ALLOW_LEAVE    #教师
-    Principal = 0xfff                   #教师
+    Teacher = Permission.ALLOW_LEAVE|Permission.LEAVE    #教师
+    Principal = 0xfff                   #教师政教处
     ADMIN = 0xffff                      #管理员
 
 

@@ -4,18 +4,14 @@ from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
 from school.extensions import csrf_protect,wechat,db
 
-# import click
-# from flask.cli import with_appcontext
-
-
-
 import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
+blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 
+#关注公众号创建的菜单
 def createmenu():
     wechat.menu.create({"button":[
         {"type":"view","name":u"请假","sub_button":[
@@ -42,7 +38,6 @@ def createmenu():
     ]})
 
 
-
 #微信获取token
 @blueprint.route('/token',methods=['GET'])
 @wechat_required
@@ -62,7 +57,6 @@ def token_get():
     except InvalidSignatureException:
         abort(403)
     return echostr
-
 
 
 #微信token信息提交
