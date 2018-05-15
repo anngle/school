@@ -1,41 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+{% block title %}主页{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
+<div class="container">
+	<div class="row">
+		<div class="col-md-6" style="background-color: #dedef8;box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+			<form action="{{url_for('superadmin.add_student')}}" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			<input type="hidden" name="classes_id" value="{{classes.id}}">
+				<input type="file" name="file" id="file">
+				<!-- <button type="button">提交</button> -->
+				<input type="submit" value="提交">
+			</form>
 
-	<title>Document</title>
-</head>
-<body>
-{%for message in get_flashed_messages()%}
-        
-<div class="ui-tooltips ui-tooltips-guide">
-    <div class="ui-tooltips-cnt ui-border-b">
-        <i></i>
-        {{message}}
+		</div>
+
+
+		<div class="col-md-6">
+
+		{%if classes.charge_teachers%}
+			班主任：{{classes.teacher.users.first_name}}
+		{%else%}
+		<form action="{{url_for('superadmin.set_teachers')}}" method="post">
+			<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+			<input type="hidden" name="classes_id" value="{{classes.id}}">
+			<input type="text" name="phone" id="" placeholder="班主任的手机号码">
+			<input type="submit" value="设置班主任">
+		</form>
+			
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-sm-6 col-md-3">
+        <div class="thumbnail">
+            <img src="/wp-content/uploads/2014/06/kittens.jpg"
+                 alt="通用的占位符缩略图">
+            <div class="caption">
+                <h3>缩略图标签</h3>
+                <p>一些示例文本。一些示例文本。</p>
+                <p>
+                    <a href="#" class="btn btn-primary" role="button">
+                        按钮
+                    </a>
+                    <a href="#" class="btn btn-default" role="button">
+                        按钮
+                    </a>
+                </p>
+            </div>
+        </div>
     </div>
+	</div>
 </div>
-{%endfor%}
-<form action="{{url_for('superadmin.add_student')}}" method="POST" enctype="multipart/form-data">
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-<input type="hidden" name="classes_id" value="{{classes.id}}">
-	<input type="file" name="file" id="file">
-	<!-- <button type="button">提交</button> -->
-	<input type="submit" value="提交">
-</form>
-<!-- <progress id="uploadprogress" min="0" max="100" value="0">0</progress> -->
-{%if classes.charge_teachers%}
-	班主任：{{classes.teacher.users.first_name}}
-{%else%}
-<hr>
-<form action="{{url_for('superadmin.set_teachers')}}" method="post">
-	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-	<input type="hidden" name="classes_id" value="{{classes.id}}">
-	<input type="text" name="phone" id="" placeholder="班主任的手机号码">
-	<input type="submit" value="设置班主任">
-</form>
- <hr>
-	{%endif%}
+
+
+{% endblock %}
+
+
+
+
 	 <br>	
 	学生列表：
 	{%if classes.student%}
@@ -43,6 +66,4 @@
 	 <br>{{i.id}},{{i.number}},{{i.name}} ,{%if i.sex%} 男{%else%}女{%endif%}
 	{%endfor%}
 	{%endif%}
-</body>
-</html>
-<!-- <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script> -->
+
