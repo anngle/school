@@ -2,6 +2,21 @@
 """Public section, including homepage and signup."""
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
+import qrcode
+
+import pyqrcode
+from io import StringIO,BytesIO
+
+from flask import make_response
+import image
+# try:
+#     from PIL import Image
+# except Exception as e:
+#     print(str(e))
+#     print('=====')
+#     # import Image
+#     from PIL.Image import core as image
+
 
 from school.extensions import login_manager
 from school.public.forms import LoginForm
@@ -31,12 +46,34 @@ def user_info():
     return dict()
     
 
-
-
+#简介
 @blueprint.route('/introduction')
 @templated()
 def introduction():
     return dict()
+
+
+#获取学生二维码
+@blueprint.route('/get_student_rq/<int:student_str>')
+def get_student_rq(student_str='0'):
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4
+    )
+    qr.add_data(f'S{student_str}')
+    qr.make(fit=True)
+    img = qr.make_image()
+    img_io = BytesIO()
+    img.save(img_io, 'PNG')
+    img_io.seek(0)
+    response = make_response(img_io.read())
+    response.headers['Content-Type'] = 'image/png'
+    response.headers['Content-Description'] = 'attachment; filename=%i.png' % student_str
+    return response
+    
+    
     
 
 

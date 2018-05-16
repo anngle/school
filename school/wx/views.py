@@ -130,14 +130,17 @@ def token_post():
     except Exception as e:
         return reply
 
+    msg_str = '%s'%url_for('user.set_roles',_external=True)
+
     #关注事件
     if msg.event == 'subscribe':
-        createmenu()
-        reply = TextReply(content=u'欢迎关注。O(∩_∩)O哈！', message=msg)
+        # createmenu()
+        
+        reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
     #扫描二维码关注事件
     if msg.event == 'subscribe_scan':
-        createmenu()
-        reply = TextReply(content=u'欢迎关注。O(∩_∩)O哈！', message=msg)
+        # createmenu()
+        reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
 
 
     

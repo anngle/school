@@ -33,6 +33,8 @@ def members():
 @login_required
 @templated()
 def set_roles():
+	if current_user.role:
+		return ''
 	school = School.query.filter_by(active=True).order_by(desc('id')).all()
 	return dict(school=school)
 
@@ -90,7 +92,7 @@ def set_roles_post():
 		role = Role.query.filter_by(name='Doorkeeper').first()
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		Doorkeeper.create(number=number,users=current_user)
-		flash(u'您已设置角色为“门口保安”。','success')
+		flash(u'您已设置角色为“校警”。','success')
 		create_patriarch_doorkeeper__menu()
 	
 	return redirect(url_for('public.home'))
@@ -386,8 +388,12 @@ def doorkeeper_main_json():
 	stid = request.args.get('s')
 	if stid[0:1] == 'S':
 		student_id = stid[1:]
-		student = Student.query.get_or_404(student_id)
-		ask_leave = AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,4])).first()
+		student = Student.query.get(student_id)
+
+		if not student:
+			return jsonify({'info':[2,'错误没有该学生']})
+
+		ask_leave = AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,2,4])).first()
 		
 		if not ask_leave:
 			return jsonify({'info':[0,[student.id,student.name]]})
@@ -406,6 +412,11 @@ def doorkeeper_main_json():
 				logger.error("离校通知家长错误，微信通知错误"+str(e))
 
 			return jsonify({'info':[2,'已同意可离校。']})
+
+		if ask_leave.charge_state == 2:
+			ask_leave.update(charge_state=3)
+			return jsonify({'info':[2,'班主任拒绝该请假']})
+
 		elif ask_leave.charge_state == 4:
 			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
 
