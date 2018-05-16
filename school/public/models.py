@@ -55,6 +55,7 @@ class Student(SurrogatePK, Model):
 	number = Column(db.String(80),nullable=False)
 	sex = Column(db.Boolean(), default=True) #男女
 	name = Column(db.String(80))
+	img = Column(db.String(80))
 
 	user = reference_col('users')
 	#家长

@@ -19,6 +19,8 @@ class Config(object):
     REGISTERVERIFY = 'anaf'
     
     UPLOADED_PATH = 'data/uploads/'
+    STUDENTS_IMG = 'data/students_img/'
+    
     ALLOWED_EXTENSIONS_FILES = set(['png', 'jpg', 'jpeg', 'gif','xls','xlsx'])
 
     #测试号

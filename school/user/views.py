@@ -430,7 +430,10 @@ def doorkeeper_main_json():
 			except Exception as e:
 				logger.error("归校通知家长错误，微信通知错误"+str(e))
 
-			return jsonify({'info':[2,'已归来请假完成']})
+			if dt.datetime.now() > ask_leave.ask_end_time:
+				return jsonify({'info':[2,'已归来超出时间']})
+			else:
+				return jsonify({'info':[2,'已归来请假完成']})
 
 		return jsonify({'info':[0,[student.id,student.name]]})
 

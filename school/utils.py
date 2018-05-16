@@ -5,6 +5,16 @@ import time,random,hashlib
 from functools import wraps
 
 
+
+import datetime 
+
+#生成无重复随机数
+gen_rnd_filename = lambda :"%s%s" %(datetime.datetime.now().strftime('%Y%m%d%H%M%S'), str(random.randrange(1000, 10000)))
+#文件名合法性验证
+allowed_img_lambda = lambda filename: '.' in filename and filename.rsplit('.', 1)[1] in set(['jpg', 'png'])
+
+
+
 def flash_errors(form, category='warning'):
     """Flash all errors for a form."""
     for field, errors in form.errors.items():

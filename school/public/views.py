@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for,current_app,send_from_directory
 from flask_login import login_required, login_user, logout_user
 import qrcode
 
@@ -8,7 +8,7 @@ import pyqrcode
 from io import StringIO,BytesIO
 
 from flask import make_response
-import image
+import image,os
 # try:
 #     from PIL import Image
 # except Exception as e:
@@ -72,6 +72,14 @@ def get_student_rq(student_str='0'):
     response.headers['Content-Type'] = 'image/png'
     response.headers['Content-Description'] = 'attachment; filename=%i.png' % student_str
     return response
+
+#获取学生头像
+@blueprint.route('/get_student_img')
+@blueprint.route('/get_student_img/<path:student_img>')
+def get_student_img(student_img='0'):
+    path = os.getcwd()+'/'+current_app.config['STUDENTS_IMG']
+    return send_from_directory(path, student_img)
+
     
     
     

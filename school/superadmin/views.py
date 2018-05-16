@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Superadmin views."""
-from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app, Response
+from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app, Response,jsonify
 from .models import SystemVersion
+from flask_login import current_user
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import Headers
@@ -9,9 +10,9 @@ import xlrd, sys, datetime, os, xlsxwriter,mimetypes
 
 from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave
 from ..user.models import User,Role
-from school.utils import create_file_name,allowed_file,templated
+from school.utils import create_file_name,allowed_file,templated,gen_rnd_filename,allowed_img_lambda
 from school.database import db
-
+from school.extensions import csrf_protect
 from log import logger
 
 try:
@@ -247,13 +248,13 @@ def delete_users(id=0):
 	return redirect(url_for('.all_users'))
 
 
-
 @blueprint.route('/all_parent')
 @templated()
 def all_parent():
 	return dict(parent=StudentParent.query.order_by(desc('id')).all())
 
 
+#所有请假信息 toexcel
 @blueprint.route('/all_ask_leave')
 @blueprint.route('/all_ask_leave/<toexcel>')
 @templated()
@@ -340,7 +341,7 @@ def all_ask_leave(toexcel=''):
 			return str(e)
 
 		
-
+#更新学校状态
 @blueprint.route('/change_active/<int:id>')
 def change_active(id=0):
 	school = School.query.get_or_404(id)
@@ -351,8 +352,28 @@ def change_active(id=0):
 	flash(u'状态更新成功。')
 	return redirect(url_for('.all_school'))
 
-		
-		
+
+#上传更新学生头像
+@csrf_protect.exempt		
+@blueprint.route('/submit_students_img',methods=['POST'])
+def submit_students_img():
+    f = request.files.get('file')
+    filename = allowed_img_lambda(f.filename)
+    filename = gen_rnd_filename()+'.'+f.filename.rsplit('.', 1)[1]
+
+    dataetime = datetime.datetime.today().strftime('%Y%m%d')
+    file_dir = '%s/%s/'%('0',dataetime)
+    
+    if not os.path.isdir(current_app.config['STUDENTS_IMG']+file_dir):
+        os.makedirs(current_app.config['STUDENTS_IMG']+file_dir)
+    
+    f.save(current_app.config['STUDENTS_IMG'] +file_dir+filename)
+    filename = file_dir+filename
+
+    student = Student.query.get(request.form.get('id'))
+    if  student:
+    	student.update(img=filename)
+    return jsonify({'success':[filename,request.form.get('id')]})
 		
 
 
