@@ -15,6 +15,8 @@ from school.database import db
 from school.extensions import csrf_protect
 from log import logger
 
+from io import StringIO,BytesIO
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -288,7 +290,7 @@ def all_ask_leave(toexcel=''):
 			response = Response()
 			response.status_code = 200
 
-			output = StringIO.StringIO()
+			output = BytesIO()
 			wb = xlsxwriter.Workbook(output, {'in_memory': True})
 			ws = wb.add_worksheet(u'请假数据表')
 

@@ -31,6 +31,15 @@ class Config(object):
     # WECHAT_SECRET = '1ea339c37b7e356def3d9aea0da65d85'
     # WECHAT_APPID = 'wxb27de34ba5055b6b'
     
+
+    AIL_SERVER = 'smtp.qq.com'
+    MAIL_PORT = 465
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or '000'
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or '000'
+    MAIL_DEBUG = False
+
+
     
 
 
