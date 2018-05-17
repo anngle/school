@@ -392,8 +392,9 @@ def doorkeeper_main_json():
 	print(stid[0:])
 	
 	stid = stid.split('S')
-	if not stid is None:
-		student_id = stid[1]
+	# if not stid is None:
+	if stid[0:2] == 'S':
+		student_id = stid[2:]
 		
 		#
 		student = Student.query.get(student_id)
