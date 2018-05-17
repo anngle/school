@@ -385,12 +385,10 @@ def doorkeeper_main_json():
 		return jsonify({'info':[1,'登录失效请刷新']})
 
 	stid = request.args.get('s')
-	print(stid)
-	print(type(stid))
-	print(stid[0:1])
-	print('====')
-	if stid[0:1] == 'S':
-		student_id = stid[1:]
+	
+	stid = stid.split('S')
+	if not stid is None:
+		student_id = stid[1]
 		
 		#
 		student = Student.query.get(student_id)
