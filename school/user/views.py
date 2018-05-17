@@ -387,7 +387,7 @@ def doorkeeper_main_json():
 	stid = request.args.get('s')
 	print(stid)
 	print(type(stid))
-	print(str(stid)[0:1])
+	print(stid[0:1])
 	print('====')
 	if stid[0:1] == 'S':
 		student_id = stid[1:]
