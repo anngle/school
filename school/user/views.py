@@ -385,6 +385,7 @@ def doorkeeper_main_json():
 		return jsonify({'info':[1,'登录失效请刷新']})
 
 	stid = request.args.get('s')
+	print(stid[0:1])
 	
 	stid = stid.split('S')
 	if not stid is None:
