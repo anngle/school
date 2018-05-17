@@ -386,6 +386,7 @@ def doorkeeper_main_json():
 
 	stid = request.args.get('s')
 	print(stid[0:1])
+	print(stid[0:])
 	
 	stid = stid.split('S')
 	if not stid is None:
