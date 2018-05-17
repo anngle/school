@@ -389,7 +389,11 @@ def doorkeeper_main_json():
 	
 	stid = stid.split('S')
 	if not stid is None:
-		student_id = stid[1]
+
+		try:
+			student_id = stid[1]
+		except Exception, e:
+			return jsonify({'info':[2,'输入错误']})
 		
 		#
 		student = Student.query.get(student_id)
