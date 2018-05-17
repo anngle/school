@@ -279,6 +279,7 @@ def all_ask_leave(toexcel=''):
 		.join(Classes,Classes.id==Student.classesd)\
 		.join(Grade,Grade.id==Classes.grades)\
 		.join(School,School.id==Grade.school)\
+		.order_by(desc(AskLeave.id))\
 		.all()
 	if not toexcel:
 		return dict(leave=leave)
