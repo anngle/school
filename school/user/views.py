@@ -392,7 +392,7 @@ def doorkeeper_main_json():
 
 		try:
 			student_id = stid[1]
-		except Exception, e:
+		except Exception as e:
 			return jsonify({'info':[2,'输入错误']})
 		
 		#
