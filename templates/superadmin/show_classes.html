@@ -54,7 +54,7 @@
 				{%if i.img%}
 				<img src="{{url_for('public.get_student_img',student_img=i.img)}}" id='{{i.id}}'>
 				{%else%}
-				<img src="{{url_for('static',filename='images/icon6.png')}}">
+				<img src="{{url_for('static',filename='images/icon6.png')}}" id='{{i.id}}'>
 
 				{%endif%}
 	            

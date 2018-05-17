@@ -267,7 +267,7 @@ def send_leave_json():
 		logger.error(u"请假，通知家长错误。微信通知错误"+str(e))
 
 
-	return jsonify({'info':'请假成功。'})
+	return jsonify({'info':['请假成功。',student.name,student.classes.name]})
 	
 
 
@@ -356,24 +356,24 @@ def doorkeeper_main():
 	if not current_user.is_authenticated:
 		return redirect(url_for('.user_login',next=request.endpoint))
 
-	ask_leave = AskLeave.query\
-		.with_entities(AskLeave,Student)\
-		.join(Student,Student.id==AskLeave.ask_users)\
-		.filter(AskLeave.send_ask_user==current_user)\
-		.filter(AskLeave.charge_state.in_([0,1,4])).all()	
-	ask_leave0 = []
-	ask_leave1 = []
-	ask_leave4 = []
-	for i in ask_leave:
-		if i[0].charge_state == 0 :
-			ask_leave0.append(i)
-		if i[0].charge_state == 1 :
-			ask_leave1.append(i)
-		if i[0].charge_state == 4 :
-			ask_leave4.append(i)
+	# ask_leave = AskLeave.query\
+	# 	.with_entities(AskLeave,Student)\
+	# 	.join(Student,Student.id==AskLeave.ask_users)\
+	# 	.filter(AskLeave.send_ask_user==current_user)\
+	# 	.filter(AskLeave.charge_state.in_([0,1,4])).all()	
+	# ask_leave0 = []
+	# ask_leave1 = []
+	# ask_leave4 = []
+	# for i in ask_leave:
+	# 	if i[0].charge_state == 0 :
+	# 		ask_leave0.append(i)
+	# 	if i[0].charge_state == 1 :
+	# 		ask_leave1.append(i)
+	# 	if i[0].charge_state == 4 :
+	# 		ask_leave4.append(i)
 
 
-	return dict({'ask_leave0':ask_leave0,'ask_leave1':ask_leave1,'ask_leave4':ask_leave4})
+	return dict()
 
 
 #门卫主页扫描获取学生信息
@@ -384,10 +384,15 @@ def doorkeeper_main_json():
 	if not current_user.is_authenticated:
 		return jsonify({'info':[1,'登录失效请刷新']})
 
-
 	stid = request.args.get('s')
+	print(stid)
+	print(type(stid))
+	print(str(stid)[0:1])
+	print('====')
 	if stid[0:1] == 'S':
 		student_id = stid[1:]
+		
+		#
 		student = Student.query.get(student_id)
 
 		if not student:
@@ -395,15 +400,20 @@ def doorkeeper_main_json():
 
 		ask_leave = AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,2,4])).first()
 		
+		#没有请假信息
 		if not ask_leave:
-			return jsonify({'info':[0,[student.id,student.name]]})
+			return jsonify({'info':[0,[student.id,student.name,student.img,student.classes.name]]})
 
 		if ask_leave.charge_state == 0:
-			return jsonify({'info':[1,'等待班主任确认中。']})
+			return jsonify({'info':[1,'等待班主任确认中。',student.name,student.classes.name]})
+
 		elif ask_leave.charge_state == 1:
+
 			if dt.datetime.now() < ask_leave.ask_start_time:
-				return jsonify({'info':[2,'未到请假开始时间']})
+				return jsonify({'info':[1,'未到请假开始时间',student.name,student.classes.name]})
+
 			ask_leave.update(charge_state=4,leave_time=dt.datetime.now())
+
 			try:
 				student_parent_wechat = ask_leave.ask_student.parents.users.wechat_id
 				msg_title = '您的小孩已离校，请记得提醒您的小孩在请假结束前(%s)回到学校。'%ask_leave.ask_end_time
@@ -411,11 +421,20 @@ def doorkeeper_main_json():
 			except Exception as e:
 				logger.error("离校通知家长错误，微信通知错误"+str(e))
 
-			return jsonify({'info':[2,'已同意可离校。']})
+			try:
+				student_name = student.name
+				teacher_wechat = student.classes.teacher.users.wechat_id
+				wechat.message.send_text(teacher_wechat,f'您的学生{student_name},请假已离校。')
+			except Exception as e:
+				logger.error(u"离校，通知教师错误。微信通知错误"+str(e))
+
+
+			return jsonify({'info':[1,'已同意可离校。',student.name,student.classes.name]})
 
 		if ask_leave.charge_state == 2:
 			ask_leave.update(charge_state=3)
-			return jsonify({'info':[2,'班主任拒绝该请假']})
+			return jsonify({'info':[1,'班主任拒绝该请假',student.name,student.classes.name]})
+
 
 		elif ask_leave.charge_state == 4:
 			ask_leave.update(charge_state=3,back_leave_time=dt.datetime.now())
@@ -430,10 +449,22 @@ def doorkeeper_main_json():
 			except Exception as e:
 				logger.error("归校通知家长错误，微信通知错误"+str(e))
 
+			try:
+				student_name = student.name
+				ask_leave_time = ask_leave.ask_end_time
+				if dt.datetime.now() > ask_leave_time:
+					msg_title = f'您的学生 {student_name} 已归校(超出请假结束时间[{ask_leave_time}])，销假完成。'
+				else:
+					msg_title = f'您的学生{student_name}，请假已回校。销假完成'
+				teacher_wechat = student.classes.teacher.users.wechat_id
+				wechat.message.send_text(teacher_wechat,msg_title)
+			except Exception as e:
+				logger.error(u"归校，通知教师错误。微信通知错误"+str(e))
+
 			if dt.datetime.now() > ask_leave.ask_end_time:
-				return jsonify({'info':[2,'已归来超出时间']})
+				return jsonify({'info':[1,'已归来超出时间',student.name,student.classes.name]})
 			else:
-				return jsonify({'info':[2,'已归来请假完成']})
+				return jsonify({'info':[1,'已归来请假完成',student.name,student.classes.name]})
 
 		return jsonify({'info':[0,[student.id,student.name]]})
 
