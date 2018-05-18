@@ -327,6 +327,7 @@ def all_ask_leave(toexcel=''):
 		.join(Grade,Grade.id==Classes.grades)\
 		.join(School,School.id==Grade.school)\
 		.order_by(desc(AskLeave.id))\
+		.limit(500)\
 		.all()
 	if not toexcel:
 		return dict(leave=leave)
@@ -354,7 +355,17 @@ def all_ask_leave(toexcel=''):
 				ws.write(i+1,5,x[2])
 				ws.write(i+1,6,x[3])
 				ws.write(i+1,7,x[5])
-				ws.write(i+1,8,x[4])
+				if x[4] == 0:
+					ws.write(i+1,8,'等待确认')
+				if x[4] == 1:
+					ws.write(i+1,8,'已批准')
+				if x[4] == 2:
+					ws.write(i+1,8,'已拒绝')
+				if x[4] == 3:
+					ws.write(i+1,8,'已完成')
+				if x[4] == 4:
+					ws.write(i+1,8,'已离校')
+
 				ws.write(i+1,9,str(x[6]))
 
 			wb.close()
@@ -382,7 +393,7 @@ def all_ask_leave(toexcel=''):
 				})
 
 			response.headers = response_headers
-			response.set_cookie('fileDownload', 'true', path='/')
+			# response.set_cookie('fileDownload', 'true', path='/')
 			return response
 
 
