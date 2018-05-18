@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Superadmin views."""
-from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app, Response,jsonify
+from flask import Blueprint, render_template,request,flash,redirect,url_for,current_app, Response,jsonify, abort
 from .models import SystemVersion
-from flask_login import current_user
+from flask_login import current_user,login_required
 from sqlalchemy import desc
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import Headers
@@ -12,7 +12,9 @@ from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave
 from ..user.models import User,Role
 from school.utils import create_file_name,allowed_file,templated,gen_rnd_filename,allowed_img_lambda
 from school.database import db
+from school.decorators import admin_required,permission_required
 from school.extensions import csrf_protect
+from school.user.models  import Permission
 from log import logger
 
 from io import StringIO,BytesIO
@@ -30,17 +32,27 @@ blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 @blueprint.route('/')
 @templated()
 def home():
-	return dict()
+	if not current_user.is_authenticated:
+		return redirect(url_for('user.user_login',next=request.endpoint))
+	
+	if not current_user.can(Permission.ADMINISTER):
+		abort(401)
+
+	return  dict()
 
 
 @blueprint.route('/add_school')
 @templated()
+@login_required
+@admin_required
 def add_school():
     return dict()
 
 
 @blueprint.route('/add_school',methods=['POST'])
 @templated()
+@login_required
+@admin_required
 def add_school_post():
 	name = request.form.get('name','')
 	if name:
@@ -52,11 +64,15 @@ def add_school_post():
 
 @blueprint.route('/add_grade/<int:id>')
 @templated()
+@login_required
+@admin_required
 def add_grade(id=0):
 	return dict(school_id=id)
 
 
 @blueprint.route('/add_grade',methods=['POST'])
+@login_required
+@admin_required
 def add_grade_post():
 	school_id = request.form.get('school_id','0')
 	name = request.form.get('name','0')
@@ -70,11 +86,15 @@ def add_grade_post():
 
 @blueprint.route('/add_classes/<int:id>')
 @templated()
+@login_required
+@admin_required
 def add_classes(id=0):
 	return dict(grade_id=id)
 
 
 @blueprint.route('/add_classes',methods=['POST'])
+@login_required
+@admin_required
 def add_classes_post():
 	grade_id = request.form.get('grade_id','0')
 	name = request.form.get('name','0')
@@ -89,18 +109,24 @@ def add_classes_post():
 
 @blueprint.route('/all_school')
 @templated()
+@login_required
+@admin_required
 def all_school():
 	return dict(school=School.query.order_by(desc('id')).all())
 
 
 @blueprint.route('/all_version')
 @templated()
+@login_required
+@admin_required
 def all_version():
 	return dict(version=SystemVersion.query.order_by(desc('id')).all())
 
 
 @blueprint.route('/all_users')
 @templated()
+@login_required
+@admin_required
 def all_users():
 	users = User.query\
 		.with_entities(\
@@ -119,6 +145,8 @@ def all_users():
 
 @blueprint.route('/all_students')
 @templated()
+@login_required
+@admin_required
 def all_students():
 	students = Student.query\
 		.with_entities(\
@@ -137,18 +165,24 @@ def all_students():
 #所有老师
 @blueprint.route('/all_teacher')
 @templated()
+@login_required
+@admin_required
 def all_teacher():
 	return dict()
 
 
 
 @blueprint.route('/add_version',methods=['GET'])
+@login_required
+@admin_required
 def add_version():
 	version = SystemVersion.query.order_by(desc('id')).first()
 	return render_template('superadmin/add_version.html',version=version)
 
 
 @blueprint.route('/add_version',methods=['POST'])
+@login_required
+@admin_required
 def add_version_post():
 	SystemVersion.create(
 		number=request.form.get('number',' '),
@@ -161,11 +195,16 @@ def add_version_post():
 
 
 @blueprint.route('/show_classes/<int:id>',methods=['GET'])
+@templated()
+@login_required
+@admin_required
 def show_classes(id=0):
 	classes = Classes.query.get_or_404(id)
-	return render_template('superadmin/show_classes.html',classes=classes)
+	return dict(classes=classes)
 
 @blueprint.route('/set_teachers',methods=['POST'])
+@login_required
+@admin_required
 def set_teachers():
 	classes_id = request.form.get('classes_id','0')
 
@@ -182,6 +221,8 @@ def set_teachers():
 
 
 @blueprint.route('/add_student',methods=['POST'])
+@login_required
+@admin_required
 def add_student():
 	files = request.files['file']
 	classes_id = request.form.get('classes_id','0')
@@ -243,6 +284,8 @@ def add_student():
 	
 
 @blueprint.route('/delete_users/<int:id>')
+@login_required
+@admin_required
 def delete_users(id=0):
 	users = User.query.get_or_404(id)
 	users.delete()
@@ -252,6 +295,8 @@ def delete_users(id=0):
 
 @blueprint.route('/all_parent')
 @templated()
+@login_required
+@admin_required
 def all_parent():
 	return dict(parent=StudentParent.query.order_by(desc('id')).all())
 
@@ -260,6 +305,8 @@ def all_parent():
 @blueprint.route('/all_ask_leave')
 @blueprint.route('/all_ask_leave/<toexcel>')
 @templated()
+@login_required
+@admin_required
 def all_ask_leave(toexcel=''):
 	leave = AskLeave.query\
 		.with_entities(\
@@ -346,6 +393,8 @@ def all_ask_leave(toexcel=''):
 		
 #更新学校状态
 @blueprint.route('/change_active/<int:id>')
+@login_required
+@admin_required
 def change_active(id=0):
 	school = School.query.get_or_404(id)
 	if school.active:
@@ -359,6 +408,8 @@ def change_active(id=0):
 #上传更新学生头像
 @csrf_protect.exempt		
 @blueprint.route('/submit_students_img',methods=['POST'])
+@login_required
+@admin_required
 def submit_students_img():
     f = request.files.get('file')
     filename = allowed_img_lambda(f.filename)
