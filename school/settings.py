@@ -56,6 +56,9 @@ class ProdConfig(Config):
 class DevConfig(Config):
     """Development configuration."""
 
+    #显示sql
+    SQLALCHEMY_ECHO = True
+
     ENV = 'dev'
     DEBUG = True
     DB_NAME = 'dev.db'

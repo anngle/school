@@ -230,15 +230,15 @@ def send_leave_json():
 	print(student)
 
 	if not student:
-		return jsonify({'info':'没有该学生。'})
+		return jsonify({'info':[1,'没有该学生。']})
 
 	if AskLeave.query.filter_by(ask_student=student).filter(AskLeave.charge_state.in_([0,1,4])).first():
-		return jsonify({'info':'该请假人已经存在请假申请，不能再次发起申请。'})
+		return jsonify({'info':[1,'该请假人已经存在请假申请，不能再次发起申请。']})
 
 	try:
 		banzhuren = student.classes.teacher.users
 	except Exception as e:
-		return jsonify({'info':'该班级未设置班主任。不能请假'})
+		return jsonify({'info':[1'该班级未设置班主任。不能请假']})
 
 
 	ask = AskLeave.create(
