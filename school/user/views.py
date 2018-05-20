@@ -226,6 +226,8 @@ def send_leave_json():
 		.filter(School.id==current_user.school)\
 		.filter(Student.id==data['student_id'])\
 		.first()
+	print(data)
+	print(student)
 
 	if not student:
 		return jsonify({'info':'没有该学生。'})
