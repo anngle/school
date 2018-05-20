@@ -152,6 +152,7 @@ def all_students():
 		.with_entities(\
 			Student.id,\
 			Student.number,\
+			Student.name,\
 			Student.sex,\
 			Student.user,\
 			Student.parent,\
