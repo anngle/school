@@ -238,7 +238,7 @@ def send_leave_json():
 	try:
 		banzhuren = student.classes.teacher.users
 	except Exception as e:
-		return jsonify({'info':[1'该班级未设置班主任。不能请假']})
+		return jsonify({'info':[1,'该班级未设置班主任。不能请假']})
 
 
 	ask = AskLeave.create(
