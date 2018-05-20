@@ -217,15 +217,24 @@ $(document).on('click','#submit',function(){
             data: data,
             type: 'POST',
             success: function(data) {
-
-                alert(data.info[0]);
                 document.getElementById('scan_qr').style.display = 'block';
                 document.getElementById('pass_qr').style.display = 'none';
+                alert(data.info[1]);
+                
                 var date = new Date();
                 var datetime = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
 
-                msg.innerHTML = '<h4>'+datetime+'   "'+data.info[1]+'['+data.info[2]+']" 发起请假申请</h4>'+msg.innerHTML;
 
+                if(data.info[0]==0){
+                    
+                    msg.innerHTML = '<h4>'+datetime+' '+data.info[1]+' </h4>'+msg.innerHTML;
+                }
+                if(data.info[0]==1){
+                    
+                    msg.innerHTML = '<h4>'+datetime+'   "'+data.info[2]+'['+data.info[3]+']" 发起请假申请</h4>'+msg.innerHTML;
+                }
+
+                
 
                 $('#student_id').val('');
                 $('#start_time').val('');
