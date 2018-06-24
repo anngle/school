@@ -2,7 +2,7 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from school import commands, public, user, superadmin,wx
+from school import commands, public, user, superadmin,wx,auth
 from school.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, \
     login_manager, migrate, wechat
     # mail,scheduler
@@ -50,6 +50,7 @@ def register_blueprints(app):
     app.register_blueprint(user.views.blueprint)
     app.register_blueprint(superadmin.views.blueprint)
     app.register_blueprint(wx.views.blueprint)
+    app.register_blueprint(auth.blueprint)
     return None
 
 

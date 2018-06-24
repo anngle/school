@@ -27,8 +27,8 @@ wechat = Wechat()
 login_manager.session_protection = 'basic'
 
 #自动注册
-login_manager.login_view = 'user.autoregister'
+login_manager.login_view = 'auth.autologin'
 login_manager.login_message = u"请登录后访问该页面."
-login_manager.refresh_view = 'auth.autoregister'
+login_manager.refresh_view = 'auth.autologin'
 
 

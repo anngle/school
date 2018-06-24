@@ -1,10 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-</head>
-<body>
-	
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}所有教师{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
+<div class="col-sm-10">
+
+<div class="table-responsive">
+  <table class="table">
+    <caption>所有教师</caption>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>mumber</th>
+        <th>name</th>
+        <th>sex</th>
+        <th>user</th>
+        <th>parent</th>
+        <th>classesd</th>
+      </tr>
+    </thead>
+    <tbody>
+    {%for i in []%}
+      <tr>
+        <td>{{i.id}}</td>
+        <td>{{i.number}}</td>
+        <td>{{i.name}}</td>
+        <td>{{i.sex}}</td>
+        <td>{{i.user}}</td>
+        <td>{{i.parent}}</td>
+        <td>{{i.classesd}}</td>
+       </tr>
+    {%endfor%}
+  </table>
+</div>
+
+</div>
+{% endblock %}
+

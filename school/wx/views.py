@@ -2,13 +2,15 @@
 from flask import Blueprint, render_template, url_for, current_app, redirect,request,flash
 from flask_wechatpy import wechat_required
 from wechatpy.replies import TextReply,ArticlesReply,create_reply,ImageReply
+
 from school.extensions import csrf_protect,wechat,db
+from school.auth.views import autoregister
 
 import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
+blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 
 #关注公众号创建的菜单
@@ -19,6 +21,16 @@ def createmenu():
                 "type":"view",
                 "name":u"发起请假",
                 "url":"%s"%url_for('user.send_leave',_external=True)
+            },
+            {
+                "type":"view",
+                "name":"我的发起",
+                "url":'%s'%url_for('user.my_senf_leave',_external=True)
+            },
+            {
+                "type":"view",
+                "name":"我的批准",
+                "url":'%s'%url_for('user.charge_leave',_external=True)
             },
         ]},\
 
@@ -134,12 +146,15 @@ def token_post():
 
     #关注事件
     if msg.event == 'subscribe':
-        # createmenu()
+
+        user = autoregister(msg.source)
+        createmenu()
         
         reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
     #扫描二维码关注事件
     if msg.event == 'subscribe_scan':
-        # createmenu()
+        createmenu()
+        user = autoregister(msg.source)
         reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
 
 

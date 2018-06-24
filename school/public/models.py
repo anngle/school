@@ -73,6 +73,9 @@ class StudentParent(SurrogatePK, Model):
 
 	student = relationship('Student', backref='parents')
 
+	phone = Column(db.String(80))
+	name = Column(db.String(80))
+
 	user = reference_col('users')
 	
 
@@ -81,6 +84,9 @@ class ChargeTeacher(SurrogatePK, Model):
 	__tablename__ = 'charge_teacher'
 
 	number = Column(db.String(80), nullable=False)
+
+	phone = Column(db.String(80))
+	name = Column(db.String(80))
 
 	user = reference_col('users')
 

@@ -41,6 +41,8 @@ def home():
 	return  dict()
 
 
+
+
 @blueprint.route('/add_school')
 @templated()
 @login_required
@@ -441,5 +443,26 @@ def submit_students_img():
     	student.update(img=filename)
     return jsonify({'success':[filename,request.form.get('id')]})
 		
+
+#撤销班级班主任
+@blueprint.route('/rollback_teacher_set/<int:id>')
+@login_required
+@admin_required
+def rollback_teacher_set(id):
+	classes = Classes.query.get_or_404(id)
+	classes.update(charge_teachers = None)
+	flash('班主任已撤销')
+	return redirect(url_for('.show_classes',id=id))
+
+
+#删除学生
+@blueprint.route('/delete_student/<int:id>/<int:classid>')
+@login_required
+@admin_required
+def delete_student(id,classid):
+	student = Student.query.get_or_404(id)
+	student.delete()
+	flash('该学生信息已撤销')
+	return redirect(url_for('.show_classes',id=classid))
 
 
