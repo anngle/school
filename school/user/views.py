@@ -485,8 +485,6 @@ def user_login_post():
 	password = request.form.get('password','0')
 	user = User.query.filter_by(username=username).first()
 
-	print(user)
-	print(user.check_password(password))
 	
 	if user and  user.check_password(password):
 		login_user(user,True)
@@ -503,8 +501,6 @@ def autoregister():
 
 	wechat_id = session.get('wechat_user_id','')
 
-	print('user')
-	print(wechat_id)
 	
 	if wechat_id:
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
@@ -514,7 +510,6 @@ def autoregister():
 		login_user(user,True)
 		return redirect(request.args.get('next') or url_for('public.home'))
 
-	print('user')
 
 	choice_str = 'ABCDEFGHJKLNMPQRSTUVWSXYZ'
 	username_str = ''
