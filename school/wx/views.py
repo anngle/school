@@ -142,7 +142,7 @@ def token_post():
             reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
 
     except Exception as e:
-        print(str(e))
+        return reply
 
     try:
         msg.event
