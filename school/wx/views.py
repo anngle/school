@@ -76,68 +76,74 @@ def token_get():
 @blueprint.route('/token',methods=['POST'])
 @wechat_required
 def token_post():
-    msg = request.wechat_msg
+    try:
+        
+        
+        msg = request.wechat_msg
 
-    reply=''
-    if msg.type == 'text':
+        reply=''
+        if msg.type == 'text':
 
-        event_str = msg.content[0:2]
-        leave_id = msg.content[2:]
+            event_str = msg.content[0:2]
+            leave_id = msg.content[2:]
 
-        user = User.query.filter_by(wechat_id=msg.source).first() 
+            user = User.query.filter_by(wechat_id=msg.source).first() 
 
-        #同意请假
-        if event_str == 'ag':
+            #同意请假
+            if event_str == 'ag':
 
-            ask_leave = AskLeave.query.get(leave_id)
+                ask_leave = AskLeave.query.get(leave_id)
 
-            if not ask_leave:
-                reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+                if not ask_leave:
+                    reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+                    return reply
+
+                if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+                    reply=TextReply(content=u'操作不正确', message=msg)
+                    return reply
+
+                ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
+                reply=TextReply(content=u'您已同意该请假申请。', message=msg)
                 return reply
 
-            if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
-                reply=TextReply(content=u'操作不正确', message=msg)
+            #不同意
+            if event_str == 're':
+                
+                ask_leave = AskLeave.query.get(leave_id)
+
+                if not ask_leave:
+                    reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+                    return reply
+
+                if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
+                    reply=TextReply(content=u'操作不正确', message=msg)
+                    return reply
+                #2拒绝
+                ask_leave.update(charge_state=2,charge_time=dt.datetime.now())
+                reply=TextReply(content=u'您已拒绝该请假申请。', message=msg)
                 return reply
 
-            ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
-            reply=TextReply(content=u'您已同意该请假申请。', message=msg)
-            return reply
-
-        #不同意
-        if event_str == 're':
-            
-            ask_leave = AskLeave.query.get(leave_id)
-
-            if not ask_leave:
-                reply=TextReply(content=u'输入请假编号不正确。', message=msg)
+            #修改用户名
+            if event_str == 'un':
+                user.update(username=leave_id)
+                reply=TextReply(content='用户名已修改。', message=msg)
                 return reply
 
-            if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
-                reply=TextReply(content=u'操作不正确', message=msg)
+            #修改密码
+            if event_str == 'pd':
+                user.set_password(password=leave_id)
+                db.session.add(user)
+                db.session.commit()
+                reply=TextReply(content=u'密码已修改。', message=msg)
                 return reply
-            #2拒绝
-            ask_leave.update(charge_state=2,charge_time=dt.datetime.now())
-            reply=TextReply(content=u'您已拒绝该请假申请。', message=msg)
-            return reply
-
-        #修改用户名
-        if event_str == 'un':
-            print(user)
-            user.update(username=leave_id)
-            reply=TextReply(content='用户名已修改。', message=msg)
-            return reply
-
-        #修改密码
-        if event_str == 'pd':
-            user.set_password(password=leave_id)
-            db.session.add(user)
-            db.session.commit()
-            reply=TextReply(content=u'密码已修改。', message=msg)
-            return reply
 
 
 
-        reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
+            reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
+
+    except Exception as e:
+        print(str(e))
+
     try:
         msg.event
     except Exception as e:
