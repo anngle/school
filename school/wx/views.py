@@ -122,6 +122,7 @@ def token_post():
 
         #修改用户名
         if event_str == 'un':
+            print(user)
             user.update(username=leave_id)
             reply=TextReply(content='用户名已修改。', message=msg)
             return reply
