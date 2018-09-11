@@ -290,9 +290,16 @@ def add_student():
 @login_required
 @admin_required
 def delete_users(id=0):
-	users = User.query.get_or_404(id)
-	users.delete()
-	flash(u'删除成功。')
+	try:
+		users = User.query.get_or_404(id)
+		users.delete()
+		flash(u'删除成功。')
+	except Exception as e:
+		print(str(e))
+		flash(u'删除失败。')
+	
+	
+	
 	return redirect(url_for('.all_users'))
 
 
