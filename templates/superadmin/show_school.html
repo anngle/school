@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{school.name}}{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
+
+<div class="container">
+{%if school.users%}
+<h1>校管员：{{school.users.name}}</h1>
+<h2>手机号：{{school.users.phone}}</h2>
+
+
+{%else%}
+    <form role="form" method="post" action="{{url_for('superadmin.set_school_admin')}}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="school_id" value="{{school.id}}">
+        <div class="form-group">
+            <label for="inputPassword" class="col-sm-2 control-label">{{school.name}}</label>
+            <div class="col-sm-8">
+                <input type="text" class="form-control" id="inputPassword" placeholder="请输入学校管理员手机号" name="phone">
+            </div>
+            <input type="submit" value="提交" class="col-sm-2 btn btn-default">
+        </div>
+    </form>
+
+{%endif%}
+    
+
+<br>    
+<br>    
+<br>    
+
+    <div style="border:2px red solid;margin-top:10px;padding:5px;">
+    {{school.name}},启用：<a href="{{url_for('superadmin.change_active',id=school.id)}}">{{school.active}}</a>,状态：{{school.state}},{{school.created_at}}   <br> 
+    <a href="{{url_for('superadmin.add_grade',id=school.id)}}">添加年级</a>
+    <hr>年级列表：
+    {%for j in school.grades%}
+    <div style="border:1px #cccccc solid ;margin-top:10px;padding:5px;">
+    {{j.name}}, <a href="{{url_for('superadmin.add_classes',id=j.id)}}">添加班级</a> &nbsp;
+    <hr>班级列表：
+    {%for h in j.classes_id%}
+    <a href="{{url_for('superadmin.show_classes',id=h.id)}}">{{h.name}}</a>
+    {%endfor%}
+    </div>
+    {%endfor%}
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+
+
+

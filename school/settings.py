@@ -39,6 +39,9 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or '000'
     MAIL_DEBUG = False
 
+    #修改flask-bootstrap的js和css为本地
+    BOOTSTRAP_SERVE_LOCAL = True
+
 
     
 

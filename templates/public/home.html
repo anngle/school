@@ -3,28 +3,37 @@
 {% block title %}主页{% endblock %}
 {% block body %}
 
+{%if not current_user.role%}
+<h1>您未设置角色,请返回设置角色。</h1>
 
-       
-         
-  {%if not current_user.roles%}
-  <h1>您未设置角色，</h1> <br>
-<a href="{{url_for('user.set_roles')}}" type="button" class="btn btn-primary">点击设置角色</a>
-  {%else%}
+{%else%}
 
-  <nav class="navbar navbar-inverse text-center" role="navigation" >  
+
+<nav class="navbar navbar-inverse text-center" role="navigation" >  
         <h3 style='color:white;font-size: 18px;line-height: 20px;margin-top:15px;' >
-您好，{{current_user.first_name}}({{current_user.roles}})
+您好，{{current_user.name}}
         </h3>       
   </nav>
+
+
+
 <div class="col-sm-10">
   <a type="button" class="btn btn-primary btn-lg btn-block" href="{{url_for('user.send_leave')}}">发起请假</a>
   <a type="button" class="btn btn-success btn-lg btn-block" href="{{url_for('user.my_leave')}}">我的请假</a>
   <a type="button" class="btn btn-info btn-lg btn-block" href="{{url_for('user.my_senf_leave')}}">我的发起</a>
   <a type="button" class="btn btn-warning btn-lg btn-block" href="{{url_for('user.charge_leave')}}">我的批准</a>
+  <a type="button" class="btn btn-danger btn-lg btn-block" href="{{url_for('user.return_leave')}}">请假归来</a> <br>
 </div>
 
 
-  {%endif%}
+
+
+
+{%endif%}       
+         
+
+
+
 
 
 {% endblock %}

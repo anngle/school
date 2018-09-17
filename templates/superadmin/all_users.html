@@ -11,7 +11,7 @@
       <tr>
         <th>ID</th>
         <th>USERNAME</th>
-        <th>first_name</th>
+        <th>name</th>
         <th>phone</th>
         <th>wechat_id</th>
         <th>role</th>
@@ -23,11 +23,13 @@
       <tr>
         <td>{{i.id}}</td>
         <td>{{i.username}}</td>
-        <td>{{i.first_name}}</td>
+        <td>{{i[2]}}</td>
         <td>{{i.phone}}</td>
         <td>{{i.wechat_id}}</td>
         <td>{{i.name}}</td>
-        <td><a href="{{url_for('superadmin.delete_users',id=i.id)}}">删除</a></td>
+        <td>
+        <!-- <a href="{{url_for('superadmin.delete_users',id=i.id)}}">删除</a> -->
+        </td>
        </tr>
     {%endfor%}
   </table>

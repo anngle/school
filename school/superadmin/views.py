@@ -8,12 +8,12 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import Headers
 import xlrd, sys, datetime, os, xlsxwriter,mimetypes
 
-from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave
+from ..public.models import School,Grade,Classes,Student,StudentParent,AskLeave,ChargeTeacher
 from ..user.models import User,Role
 from school.utils import create_file_name,allowed_file,templated,gen_rnd_filename,allowed_img_lambda
 from school.database import db
 from school.decorators import admin_required,permission_required
-from school.extensions import csrf_protect
+from school.extensions import csrf_protect,wechat
 from school.user.models  import Permission
 from log import logger
 
@@ -32,13 +32,60 @@ blueprint = Blueprint('superadmin', __name__, url_prefix='/superadmin')
 @blueprint.route('/')
 @templated()
 def home():
-	if not current_user.is_authenticated:
-		return redirect(url_for('user.user_login',next=request.endpoint))
-	
-	if not current_user.can(Permission.ADMINISTER):
-		abort(401)
+    if not current_user.is_authenticated:
+        return redirect(url_for('user.user_login',next=request.endpoint))
 
-	return  dict()
+    if not current_user.can(Permission.ADMINISTER):
+        abort(401)
+
+    #注册学生永久二维码地址 
+    res_student = wechat.qrcode.create({
+        'action_name': 'QR_LIMIT_STR_SCENE',
+        'action_info': {
+            'scene': {'scene_str':'register_student'},
+            }
+        })
+    imgstr_student = wechat.qrcode.get_url(res_student)
+
+    #注册家长永久二维码地址 
+    res_parent = wechat.qrcode.create({
+        'action_name': 'QR_LIMIT_STR_SCENE',
+        'action_info': {
+            'scene': {'scene_str':'register_parent'},
+            }
+        })
+    imgstr_parent = wechat.qrcode.get_url(res_parent)
+
+    #注册教师永久二维码地址 
+    res_teacher = wechat.qrcode.create({
+        'action_name': 'QR_LIMIT_STR_SCENE',
+        'action_info': {
+            'scene': {'scene_str':'register_teacher'},
+            }
+        })
+    imgstr_teacher = wechat.qrcode.get_url(res_teacher)
+
+    #注册门卫永久二维码地址 
+    res_dooereeper = wechat.qrcode.create({
+        'action_name': 'QR_LIMIT_STR_SCENE',
+        'action_info': {
+            'scene': {'scene_str':'register_dooereeper'},
+            }
+        })
+    imgstr_dooereeper = wechat.qrcode.get_url(res_dooereeper)
+
+    # try:
+    #     send_email(f'id:{current_user.id}已登录后台')
+    # except Exception as e:
+    #     print(str(e))
+    
+    return dict(
+        imgstr_student=imgstr_student,
+        imgstr_parent=imgstr_parent,
+        imgstr_teacher=imgstr_teacher,
+        imgstr_dooereeper=imgstr_dooereeper,
+    )
+
 
 
 
@@ -134,7 +181,7 @@ def all_users():
 		.with_entities(\
 			User.id,\
 			User.username,\
-			User.first_name,\
+			User.name,\
 			User.phone,\
 			User.wechat_id,\
 			Role.name
@@ -212,13 +259,13 @@ def set_teachers():
 	classes_id = request.form.get('classes_id','0')
 
 	phone = request.form.get('phone','')
-	user = User.query.filter_by(phone=phone).first()
-	if not user:
+	teacher = ChargeTeacher.query.filter_by(phone=phone).first()
+	if not teacher:
 		flash(u'设置班主任失败，手机号码不正确.','danger')
 		return redirect(url_for('.show_classes',id=classes_id))
 	
 	classes = Classes.query.get_or_404(classes_id)
-	classes.update(teacher=user.teacher)
+	classes.update(teacher=teacher)
 	flash(u'设置班主任成功.','success')
 	return redirect(url_for('.show_classes',id=classes_id))
 
@@ -295,8 +342,7 @@ def delete_users(id=0):
 		users.delete()
 		flash(u'删除成功。')
 	except Exception as e:
-		print(str(e))
-		flash(u'删除失败。')
+		flash(f'删除失败。{e}')
 	
 	
 	
@@ -471,5 +517,49 @@ def delete_student(id,classid):
 	student.delete()
 	flash('该学生信息已撤销')
 	return redirect(url_for('.show_classes',id=classid))
+
+
+
+
+#显示学校信息
+@blueprint.route('/show_school/<int:id>')
+@templated()
+@login_required
+@admin_required
+def show_school(id=id):
+    school = School.query.get_or_404(id)
+    return dict(school=school)
+
+
+#设置校管员
+@blueprint.route('/set_school_admin',methods=['POST'])
+@login_required
+@admin_required
+def set_school_admin():
+    school_id = request.form.get('school_id',0)
+    phone = request.form.get('phone',0)
+
+
+    school = School.query.get_or_404(school_id)
+    user = User.query.filter_by(phone=phone).first()
+
+
+    if not user:
+        flash('手机号码输入不正确')
+        return redirect(url_for('.show_school',id=school_id))
+
+    school.update(users=user)
+    flash('设置完成')
+    return redirect(url_for('.show_school',id=school_id))
+
+
+
+
+
+
+
+
+
+
 
 

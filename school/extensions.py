@@ -8,6 +8,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_wechatpy import Wechat
+from flask_bootstrap import Bootstrap
 # from flask_mail import Mail
 # from flask_apscheduler import APScheduler
 
@@ -21,6 +22,7 @@ migrate = Migrate()
 cache = Cache()
 debug_toolbar = DebugToolbarExtension()
 wechat = Wechat()
+bootstrap = Bootstrap()
 # mail = Mail()
 # scheduler = APScheduler()
 

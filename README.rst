@@ -1,107 +1,50 @@
 ===============================
-school
+flask学校请假系统
 ===============================
 
-A flasky app.
+
+更新2018-09-12
+------------------------------------------------------------------
+
+角色注册界面分开
+ - 教师注册界面
+ - 家长注册界面
+ - 学生注册界面
 
 
-Quickstart
-----------
+更新/增加字段::
 
-First, set your app's secret key as an environment variable. For example,
-add the following to ``.bashrc`` or ``.bash_profile``.
-
-.. code-block:: bash
-
-    export SCHOOL_SECRET='something-really-secret'
-
-    git clone https://github.com/anngle/school
-    cd school
-    pip install -r requirements/dev.txt
-    mkdir logging
-
-You will see a pretty welcome screen.
-
-In general, before running shell commands, set the ``FLASK_APP`` and
-``FLASK_DEBUG`` environment variables ::
-
-    export FLASK_APP=autoapp.py
-    export FLASK_DEBUG=1
-
-Once you have installed your DBMS, run the following to create your app's
-database tables and perform the initial migration ::
-
-    flask db init
-    flask db migrate
-    flask db upgrade
-    npm start
+    门卫：姓名、身份证、住址、联系电话、所属学校？
+    教师：姓名、身份证、住址、联系电话、所属学校、所属年级、所属班级
+    家长：姓名、身份证、住址、联系电话、子女姓名、所属学校、学号？
+    学生：姓名、身份证、住址、联系电话、家长姓名、家长电话
 
 
-Deployment
-----------
+2018
+------------------------------------------------------------------
+roles表中name名称必须为：
+ -Students
+ -Doorkeeper
+ -Patriarch
+ -Teacher
+ -Principal
+ -ADMIN  
+ -Others  
 
-To deploy::
+用户的编号开头 ： 学生为学生表id，其他为current_user.id 
 
-    export FLASK_DEBUG=0
-    npm run build   # build assets with webpack
-    flask run       # start the flask server
-
-In your production environment, make sure the ``FLASK_DEBUG`` environment
-variable is unset or is set to ``0``, so that ``ProdConfig`` is used.
-
-
-Shell
------
-
-To open the interactive shell, run ::
-
-    flask shell
-
-By default, you will have access to the flask ``app``.
+ - 普通用户Q
+ - 学生S
+ - 教师T
+ - 家长P
+ - 门卫M
+ - 车辆C
 
 
-Running Tests
--------------
-
-To run all tests, run ::
-
-    flask test
 
 
-Migrations
-----------
-
-Whenever a database migration needs to be made. Run the following commands ::
-
-    flask db migrate
-
-This will generate a new migration script. Then run ::
-
-    flask db upgrade
-
-To apply the migration.
-
-For a full migration command reference, run ``flask db --help``.
 
 
-Asset Management
-----------------
 
-Files placed inside the ``assets`` directory and its subdirectories
-(excluding ``js`` and ``css``) will be copied by webpack's
-``file-loader`` into the ``static/build`` directory, with hashes of
-their contents appended to their names.  For instance, if you have the
-file ``assets/img/favicon.ico``, this will get copied into something
-like
-``static/build/img/favicon.fec40b1d14528bf9179da3b6b78079ad.ico``.
-You can then put this line into your header::
 
-    <link rel="shortcut icon" href="{{asset_url_for('img/favicon.ico') }}">
 
-to refer to it inside your HTML page.  If all of your static files are
-managed this way, then their filenames will change whenever their
-contents do, and you can ask Flask to tell web browsers that they
-should cache all your assets forever by including the following line
-in your ``settings.py``::
-
-    SEND_FILE_MAX_AGE_DEFAULT = 31556926  # one year

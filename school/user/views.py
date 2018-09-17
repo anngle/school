@@ -14,8 +14,8 @@ from ..public.models import *
 from ..decorators import permission_required
 from log import logger
 from ..extensions import wechat,csrf_protect
-from .forms import SendLeaveForm
-from .create_menu_info import *
+from .forms import SendLeaveForm,RegisterStudentForm,RegisterRoleForm,\
+	RegisterRoleTracherForm,RegisterRoleParentForm
 from school.utils import templated,flash_errors
 
 blueprint = Blueprint('user', __name__, url_prefix='/users')
@@ -33,12 +33,15 @@ def members():
 @login_required
 @templated()
 def set_roles():
-	if current_user.role:
-		return ''
+	# if current_user.role:
+	# 	return ''
 	school = School.query.filter_by(active=True).order_by(desc('id')).all()
 	return dict(school=school)
 
 
+
+#设置角色   2018-09-15更新已经废弃？
+#2018-09-17校警角色未更新还是用这里设置校警  未废弃
 @blueprint.route('/set_roles_post',methods=["POST"])
 @login_required
 def set_roles_post():
@@ -51,6 +54,7 @@ def set_roles_post():
 	name = request.form.get('name','')
 
 	school = School.query.get_or_404(school_id)
+
 	#教师
 	if int(role_id) ==1:
 		if verify != current_app.config['REGISTERVERIFY']:
@@ -60,7 +64,7 @@ def set_roles_post():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		ChargeTeacher.create(number=number,users=current_user)
 		flash(u'您已设置角色为“教师”。','success')
-		create_teacher_menu()
+
 	#学生
 	if int(role_id)==0:
 		role = Role.query.filter_by(name='Students').first()
@@ -71,7 +75,7 @@ def set_roles_post():
 		student.update(users=current_user)
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		flash(u'您已设置角色为“学生”。','success')
-		create_student_menu()
+
 	#家长
 	if int(role_id)==2:
 		role = Role.query.filter_by(name='Patriarch').first()
@@ -83,17 +87,16 @@ def set_roles_post():
 		student.update(parents=sp)
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name+'的家长')
 		flash(u'您已设置角色为“%s”的家长。'%name,'success')
-		create_patriarch_doorkeeper__menu()
+
 	#门卫
 	if int(role_id)==3:
 		if verify != current_app.config['REGISTERVERIFY']:
 			flash(u'校验码错误','danger')
 			return redirect(url_for('public.home'))
 		role = Role.query.filter_by(name='Doorkeeper').first()
-		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
-		Doorkeeper.create(number=number,users=current_user)
+		current_user.update(phone=phone,roles=role,name=name)
+		Doorkeeper.create(number=number,users=current_user,schools=school)
 		flash(u'您已设置角色为“校警”。','success')
-		create_patriarch_doorkeeper__menu()
 	
 	return redirect(url_for('public.home'))
 
@@ -223,7 +226,7 @@ def send_leave_json():
 		.join(Classes,Classes.id==Student.classesd) \
 		.join(Grade,Grade.id==Classes.grades) \
 		.join(School,School.id==Grade.school) \
-		.filter(School.id==current_user.school)\
+		.filter(School.id==current_user.doorkeeper.school_id)\
 		.filter(Student.id==data['student_id'])\
 		.first()
 	if not student:
@@ -251,7 +254,7 @@ def send_leave_json():
 	try:
 		teacher_wechat = student.classes.teacher.users.wechat_id
 		msg_title = u'您的学生：%s发起了请假,\n'%student.name
-		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"ag%s",\n拒绝请回复"re%s",'\
+		msg_title += u'开始时间：%s,\n结束时间%s， \n请假原因：%s,\n如同意请回复"同意请假%s",\n拒绝请回复"不同意请假%s",'\
 			%(str(data['start_time']),str(data['end_time']),data['note'],ask.id,ask.id)
 		wechat.message.send_text(teacher_wechat,msg_title)
 	except Exception as e:
@@ -351,6 +354,7 @@ def change_return_leave(id=0):
 @blueprint.route('/doorkeeper_main')
 @templated()
 def doorkeeper_main():
+	print(current_user.doorkeeper.schools)
 
 	if not current_user.is_authenticated:
 		return redirect(url_for('.user_login',next=request.endpoint))
@@ -494,6 +498,230 @@ def user_login_post():
 		return redirect(url_for('.user_login'))
 
 
+#其他用户注册验证信息
+@blueprint.route('/register_set_role',methods=['GET','POST'])
+@templated()
+@login_required
+def register_set_role():
+
+	if current_user.roles:
+		flash('您已经设置过角色信息，请勿在设置。')
+		return redirect(url_for('public.home'))
+
+	form = RegisterRoleForm()
+	if request.method=='GET':
+		return dict(form=form)
+	else:
+		if not form.validate_on_submit():
+			flash_errors(form)
+			return dict(form=form)
+
+		role = Role.query.filter_by(name='Others').first()
+		current_user.update(
+			name = form.name.data,
+			phone = form.phone.data,
+			id_number = form.id_number.data,
+			address = form.address.data,
+			car_number = form.car_number.data,
+			q_number = "Q"+str(current_user.id),
+			roles=role
+		)
+		flash('您的信息已提交')
+		return redirect(url_for('public.home'))
+
+ 
+
+#学生角色验证信息
+@blueprint.route('/register_set_student',methods=['GET','POST'])
+@templated()
+def register_set_student():
+
+	if current_user.roles:
+		flash('您已经设置过角色信息，请勿在设置。')
+		return redirect(url_for('public.home'))
+
+
+	form = RegisterStudentForm()
+	if request.method=='GET':
+		return dict(form=form)
+	else:
+		role = Role.query.filter_by(name='Students').first()
+		student = Student.query.filter_by(number=number).filter_by(name=name).first()
+		if not student:
+			flash(u'姓名与学号不符合，请重新输入','danger')
+			return redirect(url_for('public.home'))
+		student.update(users=current_user)
+		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
+		flash(u'您已设置角色为“学生”。','success')
+		return dict(form=form)
+
+
+
+@blueprint.route('/register_set_parent',methods=['GET','POST'])
+@templated()
+@login_required
+def register_set_parent():
+	"""
+	#家长角色验证信息
+	"""
+	if current_user.roles:
+		flash('您已经设置过角色信息，请勿在设置。')
+		return redirect(url_for('public.home'))
+
+
+	form = RegisterRoleParentForm()
+	if not request.method=='POST':
+		school = School.query.order_by('id').all()
+		return dict(form=form,school=school)
+	
+	if not form.validate_on_submit():
+		flash_errors(form)
+		return dict(form=form)
+
+	name = form.name.data
+	id_number = form.id_number.data
+	address = form.address.data
+	phone = form.phone.data
+	child_name = form.child_name.data
+	child_number = form.child_number.data
+	school_id = form.school_id.data
+
+	student = Student.query\
+		.join(Classes,Classes.id==Student.classesd)\
+		.join(Grade,Grade.id==Classes.grades)\
+		.join(School,School.id==Grade.school)\
+		.filter(Student.number==child_number)\
+		.filter(School.id==school_id)\
+		.first()
+
+	if not student:
+		flash('您输入的信息有误，无法查到该学生信息。({child_name},{child_number})')
+		return dict(form=form)
+
+	role = Role.query.filter_by(name='Patriarch').first()
+
+	
+
+	sp = StudentParent.create(
+		name=name,
+		phone=phone,
+		id_number=id_number,
+		address=address,
+		child_name=child_name,
+		child_number=child_number,
+		schools=School.query.get(int(school_id)),
+		users=current_user
+	)
+	student.update(
+		parents=sp
+	)
+	current_user.update(
+		name=name,
+		q_number = "P"+str(current_user.id),
+		roles=role
+	)
+
+	flash(f'您已设置为“{child_name}”的家长。')
+	return redirect(url_for('public.home'))
+	
+
+
+#教师角色验证信息
+@blueprint.route('/register_set_teacher',methods=['GET','POST'])
+@templated()
+@login_required
+def register_set_teacher():
+
+	if current_user.roles:
+		flash('您已经设置过角色信息，请勿在设置。')
+		return redirect(url_for('public.home'))
+
+	form = RegisterRoleTracherForm()
+	if request.method=='GET':
+		school = School.query.order_by('id').all()
+		return dict(form=form,school=school)
+	else:
+		if not form.validate_on_submit():
+			flash_errors(form)
+			return dict(form=form)
+
+		# classes = Classes.query.get_or_404(request.form.get('classes','0'))
+		classes = Classes.query\
+			.with_entities(Classes.id,Classes.name,User.wechat_id)\
+			.join(Grade,Grade.id==Classes.grades) \
+			.join(School,School.id==Grade.school) \
+			.join(User,User.id==School.user) \
+			.filter(Classes.id==request.form.get('classes','0'))\
+			.first()
+
+		role = Role.query.filter_by(name='Teacher').first()
+
+		name = form.name.data
+		number = form.id_car.data
+
+		current_user.update(
+			q_number = "T"+str(current_user.id),
+			roles=role,
+			name=name,
+		)
+		teacher = ChargeTeacher.create(
+			number=number,
+			users=current_user,
+			phone=form.phone.data,
+			name=name,
+			id_number=form.id_number.data,
+			address=form.address.data,
+			tmp_classes_id = classes[0]
+		)
+		# Classes.update(teacher=teacher)
+		try:
+			msg_str = f'“{name}”老师(编号{number})已注册为“{classes[1]}”的班主任，同意请回复：“同意该教师{teacher.id}” 。'
+			wechat.message.send_text(classes[2],msg_str)
+		except Exception as e:
+			print(str(e))
+		
+
+
+		flash('您的信息已提交,请等待审核')
+		return redirect(url_for('public.home'))
+	
+
+#门卫角色验证信息
+@blueprint.route('/register_set_dooereeper')
+@templated()
+def register_set_dooereeper():
+	return dict()		
+
+
+#注册教师时需要查询年级信息
+@blueprint.route('/register_get_grade_json')
+@csrf_protect.exempt
+@login_required
+def register_get_grade_json():
+	school_id = request.args.get('s')
+	grade = Grade.query.filter_by(school=school_id).all()
+	grade_dict = []
+
+	for i in grade:
+		grade_dict.append([i.id,i.name])
+
+	return jsonify(grade_dict)
+	
+
+#注册教师时需要查询班级信息
+@blueprint.route('/register_get_classes_json')
+@csrf_protect.exempt
+@login_required
+def register_get_classes_json():
+	grade_id = request.args.get('s')
+	classes = Classes.query.filter_by(grades=grade_id).all()
+	classes_dict = []
+	for i in classes:
+		classes_dict.append([i.id,i.name])
+	return jsonify(classes_dict)
+	
+
+
 #自动注册 
 @blueprint.route('/autoregister')
 @oauth(scope='snsapi_base')
@@ -501,7 +729,6 @@ def autoregister():
 
 	wechat_id = session.get('wechat_user_id','')
 
-	
 	if wechat_id:
 		user = User.query.filter_by(wechat_id=session.get('wechat_user_id')).first()
 	else:

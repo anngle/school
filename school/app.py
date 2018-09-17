@@ -4,7 +4,7 @@ from flask import Flask, render_template
 
 from school import commands, public, user, superadmin,wx,auth
 from school.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, \
-    login_manager, migrate, wechat
+    login_manager, migrate, wechat,bootstrap
     # mail,scheduler
 from school.settings import ProdConfig
 
@@ -35,6 +35,7 @@ def register_extensions(app):
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
     wechat.init_app(app)
+    bootstrap.init_app(app)
     # mail.init_app(app)
     # scheduler.init_app(app)
     #启动定时器

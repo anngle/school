@@ -1,0 +1,56 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "bootstrap/base.html" %}
+{% block title %}安星物业信息管理平台{% endblock %}
+
+{%block styles%}
+
+<link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+<style>
+    .navbar{margin-bottom: 0px;} 
+    .form{margin-top: 20px;margin-bottom: 20px;}
+</style>
+
+{%endblock%}
+
+
+
+{% block body %} 
+
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+     <div class="container">
+         <div class="navbar-header">
+             <button type="button" class="navbar-toggle"
+              data-toggle="collapse" data-target=".navbar-collapse">
+                 <span class="sr-only">Toggle navigation</span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+             </button>
+             <a class="navbar-brand" href="#">请验证您的学生信息</a>
+         </div>
+         <div class="navbar-collapse collapse">
+             <ul class="nav navbar-nav">
+                 <li><a href="{{url_for('user.register_set_student')}}">设置学生身份</a></li>
+             </ul>
+         </div>
+     </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block content %} 
+
+<div class="container">
+{{ wtf.quick_form(form) }}
+</div>
+
+{% endblock %}
+
+{%include 'user/footer.html'%}
+{% endblock %}
+
+

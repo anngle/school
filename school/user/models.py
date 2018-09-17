@@ -57,6 +57,7 @@ class Role(SurrogatePK, Model):
     @staticmethod
     def insert_roles():
         roles = {
+            'Others': (0,True), #其他
             'Students': (Permission.LEAVE,True), #学生
             'Doorkeeper': (Permission.LEAVE|Permission.RETURN_LEAVE,False),#门卫
             'Patriarch': (Permission.LEAVE,False), #家长
@@ -93,39 +94,57 @@ class Role(SurrogatePK, Model):
 
 
 class User(UserMixin, SurrogatePK, Model):
-    """A user of the app."""
+    """
+    username:用户名自动生成
+    password密码
+    created_at密码
+    active是否激活
+    is_admin是否管理员
+    wechat_id微信id
+    phone手机号
+    name真实姓名
+    id_number身份证号码
+    address住址
+    car_number车牌号
+    q_number用户编号。用户识别 用于出入等场景 格式：Q+ID
+    """
 
     __tablename__ = 'users'
     username = Column(db.String(80), unique=True, nullable=False)
     #: The hashed password
     password = Column(db.Binary(128), nullable=True)
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
-    first_name = Column(db.String(30), nullable=True)
-    last_name = Column(db.String(30), nullable=True)
     active = Column(db.Boolean(), default=False)
     is_admin = Column(db.Boolean(), default=False)
     wechat_id = Column(db.String(80), nullable=True)
+    #默认这里的手机号等信息用于其他人员， 班主任  学生家长身份的信息在各个表中
     phone = Column(db.String(80))
+    name = Column(db.String(80))
+    id_number = Column(db.String(80))
+    address = Column(db.String(200))
+    car_number = Column(db.String(80))
+    q_number = Column(db.String(80), unique=True)
+
 
     role = reference_col('roles')
     #学校表
-    school = reference_col('schools')
+    # school = reference_col('schools')
 
     #教师表 一对一
     teacher = relationship('ChargeTeacher', backref='users',uselist=False)
-    #学生表
+    #学生表 一对一
     student = relationship('Student', backref='users',uselist=False)
-    #学生表家长
+    #学生表家长 一对一
     parents = relationship('StudentParent', backref='users',uselist=False)
-    #门卫
-    doorkeeper = relationship('Doorkeeper', backref='users')
+    #门卫  一对一
+    doorkeeper = relationship('Doorkeeper', backref='users',uselist=False)
 
     #请假发起人
     send_users = relationship('AskLeave', backref='send_ask_user',primaryjoin="User.id == AskLeave.send_users")
     #批准请假人
     charge_users = relationship('AskLeave', backref='charge_ask_user',primaryjoin="User.id == AskLeave.charge_users")
     
-
+    schools = relationship('School', backref='users')
 
     
 

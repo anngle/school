@@ -1,0 +1,148 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "bootstrap/base.html" %}
+{% block title %}安星物业信息管理平台{% endblock %}
+
+{%block styles%}
+<script type="text/javascript" src="{{url_for('static',filename='js/jquery.min.js')}}"></script>
+<link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet" type="text/css" />
+<style>
+    .navbar{margin-bottom: 0px;} 
+    .form{margin-top: 20px;margin-bottom: 20px;}
+</style>
+
+{%endblock%}
+
+
+
+{% block body %} 
+
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+     <div class="container">
+         <div class="navbar-header">
+             <button type="button" class="navbar-toggle"
+              data-toggle="collapse" data-target=".navbar-collapse">
+                 <span class="sr-only">Toggle navigation</span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+             </button>
+             <a class="navbar-brand" href="#">请验证您的教师信息</a>
+         </div>
+         <div class="navbar-collapse collapse">
+             <ul class="nav navbar-nav">
+                 <li><a href="{{url_for('user.register_set_student')}}">请验证您的教师信息</a></li>
+             </ul>
+         </div>
+     </div>
+</div>
+{% endblock %}
+
+
+{% block content %} 
+
+<div class="container">
+
+<form method="POST" style="margin-top: 20px;">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+    <label for="">学校信息</label>
+    <select name="school" id="school" class="form-control" onchange="changeSchool()">
+        <option value="0">请选择学校</option>
+        {%for i in school%}
+        <option value="{{i.id}}">{{i.name}}</option>
+        {%endfor%}
+    </select>
+    <select name="grade" id="grade" class="form-control" onchange="changeGrade()">
+    </select>
+    <select name="classes" id='classes' class="form-control">
+    </select>
+    </div>
+
+    <div class="form-group">
+    {{ form.name.label }} {{ form.name(class="form-control") }}
+    </div>
+    <div class="form-group">
+    {{ form.id_car.label }} {{ form.id_car(class="form-control") }}
+    </div>
+    <div class="form-group">
+    {{ form.id_number.label }} {{ form.id_number(class="form-control") }}
+    </div>
+    <div class="form-group">
+    {{ form.address.label }} {{ form.address(class="form-control") }}
+    </div>
+    <div class="form-group">
+    {{ form.phone.label }} {{ form.phone(class="form-control") }}
+    </div>
+    <div class="form-group">
+    {{ form.submit() }}
+    </div>
+
+    
+
+</form>
+</div>
+
+{% endblock %}
+
+<script>
+    // 选择学校时清空班级年级信息,json获取年级信息
+    function changeSchool(){
+        var school = document.getElementById("school");
+        var school_id = school.options[school.selectedIndex].value;
+
+        var grade = document.getElementById('grade');
+        var classes = document.getElementById('classes');
+
+        grade.innerHTML = "";
+        classes.innerHTML = "";
+
+        $.ajax({
+
+            url: "{{url_for('user.register_get_grade_json',_external=True)}}?s="+school_id,
+            dataType: 'json',
+            
+            success:function(data){
+                var json = eval(data); //数组  
+                grade.options.add(new Option('请选择年级',''));  
+                for(var i=0;i<data.length;++i){
+                    grade.options.add(new Option(data[i][1],data[i][0]));  
+                }                
+            }
+        });
+
+        
+    }
+
+    // 选择班级时 清空班级信息  json获取班级信息
+    function changeGrade(){
+        var grade = document.getElementById("grade");
+        var grade_id = grade.options[grade.selectedIndex].value;
+
+        var classes = document.getElementById('classes');
+        classes.innerHTML = "";
+
+        $.ajax({
+
+            url: "{{url_for('user.register_get_classes_json',_external=True)}}?s="+grade_id,
+            dataType: 'json',
+            
+            success:function(data){
+                var json = eval(data); 
+                classes.options.add(new Option('请选择班级',''));  
+                for(var i=0;i<data.length;++i){
+                    classes.options.add(new Option(data[i][1],data[i][0]));  
+                }                
+            }
+        });
+    }
+
+    
+</script>
+
+{%include 'user/footer.html'%}
+{% endblock %}
+
+

@@ -53,16 +53,16 @@ def introduction():
     return dict()
 
 
-#获取学生二维码
-@blueprint.route('/get_student_rq/<int:student_str>')
-def get_student_rq(student_str='0'):
+#获取二维码
+@blueprint.route('/get_rq/<string:rq_str>')
+def get_rq(rq_str='0'):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
         border=4
     )
-    qr.add_data(f'S{student_str}')
+    qr.add_data(f'{rq_str}')
     qr.make(fit=True)
     img = qr.make_image()
     img_io = BytesIO()
@@ -70,8 +70,9 @@ def get_student_rq(student_str='0'):
     img_io.seek(0)
     response = make_response(img_io.read())
     response.headers['Content-Type'] = 'image/png'
-    response.headers['Content-Description'] = 'attachment; filename=%i.png' % student_str
+    response.headers['Content-Description'] = 'attachment; filename=%s.png' % rq_str
     return response
+
 
 #获取学生头像
 @blueprint.route('/get_student_img')

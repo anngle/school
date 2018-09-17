@@ -1,29 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+{% block title %}所有学生{% endblock %}
+{% block body %}
+{%include 'superadmin/nav.html'%}
 
-	<title>Document</title>
-</head>
-<body>
+<div class="container">
+	
+
+
 <a href="{{url_for('superadmin.add_school')}}">添加学校</a>
- <br>学校列表：
+ <br>学校列表： <br>
+ <br>	
 	{%for i in school%}
-	<div style="border:2px red solid;margin-top:10px;padding:5px;">
-	{{i.name}},启用：<a href="{{url_for('superadmin.change_active',id=i.id)}}">{{i.active}}</a>,状态：{{i.state}},{{i.created_at}}   <br>	
-	<a href="{{url_for('superadmin.add_grade',id=i.id)}}">添加年级</a>
-	<hr>年级列表：
-	{%for j in i.grades%}
-	<div style="border:1px #cccccc solid ;margin-top:10px;padding:5px;">
-	{{j.name}}, <a href="{{url_for('superadmin.add_classes',id=j.id)}}">添加班级</a> &nbsp;
-	<hr>班级列表：
-	{%for h in j.classes_id%}
-	<a href="{{url_for('superadmin.show_classes',id=h.id)}}">{{h.name}}</a>
-	{%endfor%}
-	</div>
-	{%endfor%}
-	</div>
+
+<a href="{{url_for('superadmin.show_school',id=i.id)}}">{{i.name}}</a> ,<br> <br>	
+
+	
 	{%endfor%}, 
-</body>
-</html>
+</div>
+{% endblock %}

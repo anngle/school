@@ -9,6 +9,9 @@ from school.auth.views import autoregister
 import datetime as dt
 from ..public.models import AskLeave
 from ..user.models import User
+from .enum import commands
+
+import re
 
 blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 
@@ -16,23 +19,8 @@ blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
 #关注公众号创建的菜单
 def createmenu():
     wechat.menu.create({"button":[
-        {"type":"view","name":u"请假","sub_button":[
-            {
-                "type":"view",
-                "name":u"发起请假",
-                "url":"%s"%url_for('user.send_leave',_external=True)
-            },
-            {
-                "type":"view",
-                "name":"我的发起",
-                "url":'%s'%url_for('user.my_senf_leave',_external=True)
-            },
-            {
-                "type":"view",
-                "name":"我的批准",
-                "url":'%s'%url_for('user.charge_leave',_external=True)
-            },
-        ]},\
+        {"type":"view","name":u"平台主页",\
+            "url":"%s"%url_for('public.home',_external=True)},\
 
         {"type":"view","name":u"用户服务","sub_button":[
             {
@@ -78,68 +66,24 @@ def token_get():
 def token_post():
     try:
         
-        
         msg = request.wechat_msg
-
         reply=''
+
         if msg.type == 'text':
 
-            event_str = msg.content[0:2]
-            leave_id = msg.content[2:]
-
+            # 匹配指令
+            command_match = False
             user = User.query.filter_by(wechat_id=msg.source).first() 
 
-            #同意请假
-            if event_str == 'ag':
+            for key_word in commands:
+                if re.match(key_word, msg.content):
+                    re_str = msg.content.replace(commands[key_word][0],'').strip()
+                    reply = commands[key_word][1](user,msg,re_str)
+                    command_match = True
+                    break
 
-                ask_leave = AskLeave.query.get(leave_id)
-
-                if not ask_leave:
-                    reply=TextReply(content=u'输入请假编号不正确。', message=msg)
-                    return reply
-
-                if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
-                    reply=TextReply(content=u'操作不正确', message=msg)
-                    return reply
-
-                ask_leave.update(charge_state=1,charge_time=dt.datetime.now())
-                reply=TextReply(content=u'您已同意该请假申请。', message=msg)
-                return reply
-
-            #不同意
-            if event_str == 're':
-                
-                ask_leave = AskLeave.query.get(leave_id)
-
-                if not ask_leave:
-                    reply=TextReply(content=u'输入请假编号不正确。', message=msg)
-                    return reply
-
-                if user != ask_leave.charge_ask_user or ask_leave.charge_state!=0:
-                    reply=TextReply(content=u'操作不正确', message=msg)
-                    return reply
-                #2拒绝
-                ask_leave.update(charge_state=2,charge_time=dt.datetime.now())
-                reply=TextReply(content=u'您已拒绝该请假申请。', message=msg)
-                return reply
-
-            #修改用户名
-            if event_str == 'un':
-                user.update(username=leave_id)
-                reply=TextReply(content='用户名已修改。', message=msg)
-                return reply
-
-            #修改密码
-            if event_str == 'pd':
-                user.set_password(password=leave_id)
-                db.session.add(user)
-                db.session.commit()
-                reply=TextReply(content=u'密码已修改。', message=msg)
-                return reply
-
-
-
-            reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
+            if not command_match:
+                reply=TextReply(content=u'您说什么我不懂耶。', message=msg)
 
     except Exception as e:
         return reply
@@ -149,21 +93,44 @@ def token_post():
     except Exception as e:
         return reply
 
-    msg_str = '%s'%url_for('user.set_roles',_external=True)
+    msg_str = '欢迎关注【安星物业服务管理平台】，如你非校内人员或非学生家长，\
+        <a href="{0}">请点击这里注册填写您的信息</a>'.format(url_for('user.register_set_role',_external=True))
 
-    #关注事件
+    #关注事件  扫描二维码
     if msg.event == 'subscribe':
 
         user = autoregister(msg.source)
         createmenu()
         
-        reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
-    #扫描二维码关注事件
+        reply = TextReply(content=msg_str, message=msg)
+    
+
+    #扫描带参数二维码关注事件
     if msg.event == 'subscribe_scan':
         createmenu()
         user = autoregister(msg.source)
-        reply = TextReply(content=f'欢迎关注,<a href="{msg_str}">点击设置角色</a>', message=msg)
 
+        if not msg.scene_id:
+            reply = TextReply(content=msg_str, message=msg)
+
+        #注册学生  家长   教师   门卫  
+        if msg.scene_id =='register_student':
+            msg_str = '欢迎关注【安星物业服务管理平台】，\
+                <a href="{0}">请点击这里验证学生信息</a>'.format(url_for('user.register_set_student',_external=True))
+            
+        if msg.scene_id =='register_parent':
+            msg_str = '欢迎关注【安星物业服务管理平台】，\
+                <a href="{0}">请点击这里验证家长信息</a>'.format(url_for('user.register_set_parent',_external=True))
+
+        if msg.scene_id =='register_teacher':
+            msg_str = '欢迎关注【安星物业服务管理平台】，\
+                <a href="{0}">请点击这里验证教师身份信息</a>'.format(url_for('user.register_set_teacher',_external=True))
+
+        if msg.scene_id =='register_dooereeper':
+            msg_str = '欢迎关注【安星物业服务管理平台】，\
+                <a href="{0}">请点击这里验证校警信息</a>'.format(url_for('user.register_set_dooereeper',_external=True))
+
+        reply = TextReply(content=msg_str, message=msg)
 
     
     return reply
