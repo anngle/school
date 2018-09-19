@@ -333,6 +333,7 @@ def return_leave(id=0):
 	askleave = AskLeave.query.filter_by(send_ask_user=current_user).filter_by(charge_state=1).order_by('id').all()	
 	return dict(askleave=askleave)
 
+
 @blueprint.route('/change_return_leave/<int:id>')
 @login_required
 @permission_required(Permission.RETURN_LEAVE)
@@ -354,7 +355,6 @@ def change_return_leave(id=0):
 @blueprint.route('/doorkeeper_main')
 @templated()
 def doorkeeper_main():
-	print(current_user.doorkeeper.schools)
 
 	if not current_user.is_authenticated:
 		return redirect(url_for('.user_login',next=request.endpoint))
@@ -413,6 +413,7 @@ def doorkeeper_main_json():
 		if ask_leave.charge_state == 0:
 			return jsonify({'info':[1,'等待班主任确认中。',student.name,student.classes.name]})
 
+		#如果已经同意
 		elif ask_leave.charge_state == 1:
 
 			if dt.datetime.now() < ask_leave.ask_start_time:
@@ -461,7 +462,7 @@ def doorkeeper_main_json():
 				if dt.datetime.now() > ask_leave_time:
 					msg_title = f'您的学生 {student_name} 已归校(超出请假结束时间[{ask_leave_time}])，销假完成。'
 				else:
-					msg_title = f'您的学生{student_name}，请假已回校。销假完成'
+					msg_title = f'您的学生{student_name}，请假已回校，销假完成。'
 				teacher_wechat = student.classes.teacher.users.wechat_id
 				wechat.message.send_text(teacher_wechat,msg_title)
 			except Exception as e:
@@ -554,7 +555,6 @@ def register_set_student():
 		current_user.update(phone=phone,roles=role,schools=school,first_name=name)
 		flash(u'您已设置角色为“学生”。','success')
 		return dict(form=form)
-
 
 
 @blueprint.route('/register_set_parent',methods=['GET','POST'])
@@ -771,5 +771,24 @@ def autologin(name=''):
 	login_user(User.query.filter_by(username=name).first())
 	return redirect(url_for('public.home'))
 
+
+
+@blueprint.route('/entry_and_exit_management')
+@templated()
+def entry_and_exit_management():
+	"""
+	出入管理
+	获取门卫归属本校所有学生信息， T开头为学生信息
+	在js做校验，ajax传送服务器状态。
+	因为周末人会多响应要快。
+	其他人员扫描弹框需要输入进入事由，出去无需填写
+	"""
+
+	if not current_user.is_authenticated:
+		return redirect(url_for('.user_login',next=request.endpoint))
+
+
+
+	return dict()
 
 

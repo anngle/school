@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}请假系统{% endblock %}
+{% block title %}出入管理{% endblock %}
 {% block body %}
 
 
@@ -10,9 +10,9 @@
     </div>
     <div>
         <ul class="nav navbar-nav">
-            <li class="active"><a href="{{url_for('user.doorkeeper_main')}}">发起请假</a></li>
+            <li><a href="{{url_for('user.doorkeeper_main')}}">发起请假</a></li>
             <li><a href="{{url_for('superadmin.all_version')}}">请假信息</a></li>
-            <li><a href="{{url_for('user.entry_and_exit_management')}}">出入管理</a></li>
+            <li class="active"><a href="{{url_for('user.entry_and_exit_management')}}">出入管理</a></li>
             
             
         </ul>
@@ -44,46 +44,35 @@
                 <p class="text-center"  id="waiting">等待验证中。。。</p>
             </div>
 
-            <div class="col-xs-12" style="height:500px;display:none" id='pass_qr'>
+            <div class="col-xs-12" style="height:500px;display:none;padding-left: 0px;background-color:#FFFFF0; " id='pass_qr'>
 
-                <div class="col-xs-8">
+                <div class="col-xs-12" style="padding-left: 0px; ">
 
-                    <div class="col-xs-6"><h1>姓名：</h1></div>
-                    <div class="col-xs-6"><h1 id="name">&nbsp;</h1></div>
-                    <div class="col-xs-6"><h1>班级：</h1></div>
-                    <div class="col-xs-6"><h1 id="classes">238班</h1></div>
+                    <div class="col-xs-4"><h1 style="text-align: right;">姓名：</h1></div>
+                    <div class="col-xs-8"><h1 id="name">&nbsp;</h1></div>
+                    <div class="col-xs-4"><h1 style="text-align: right;">电话：</h1></div>
+                    <div class="col-xs-8"><h1 id="phone">18977771077</h1></div>
 
 
                 </div>
 
-
-                <div class="col-xs-4">
-                    <img src="{{url_for('static',filename='images/icon6.png')}}" id='img' class="img-thumbnail">
-
-                </div>
                 
 
                 <div class="col-xs-12">
-                    <div class="col-xs-4"><h1>开始：</h1></div>
-                    <div class="col-xs-8" style="margin-top:2.0rem;">
-                        <input type="text" class="form-control" id="start_time" name="start_time">
-                        <input type="hidden" value="" id="student_id">
+                    <div class="col-xs-4" style="padding-left: 0px;"><h1>身份证：</h1></div>
+                    <div class="col-xs-8" style="padding-left: 0px;">
+                        <h1>452123199809091234</h1>
                     </div>
 
                 </div>
 
-                <div class="col-xs-12">
-                    <div class="col-xs-4"><h1>结束：</h1></div>
-                    <div class="col-xs-8" style="margin-top:2.0rem;"><input type="text" class="form-control" id="end_time" name="end_time" ></div>
-                </div>
 
-                <div class="col-xs-12">
-                    <div class="col-xs-4"><h1>事由：</h1></div>
+                <div class="col-xs-12" style="padding-left: 0px; ">
+                    <div class="col-xs-4"><h1 style="text-align: right;">事由：</h1></div>
                     <div class="col-xs-4" style="margin-top:2.0rem;">
                     <select class="form-control"   id="select_note">
-                          <option value="病假">病假</option>
-                          <option value="购物">购物</option>
-                          <option value="回家">回家</option>
+                          <option value="探访">探访</option>
+                          <option value="送物">回家</option>
                           <option value="办事">办事</option>
                           <option value="其他">其他</option>
                         </select>
@@ -94,7 +83,7 @@
                 <div class="col-xs-12">&nbsp;</div>
 
                 <div class="col-xs-12">
-                    <button type="button" class="btn btn-info btn-lg btn-block" id="submit">提交</button>
+                    <button type="button" class="btn btn-info btn-lg btn-block" id="submit">允许</button>
                 </div>
                 
                 
@@ -160,7 +149,7 @@ function keyUp(e) {
                         document.getElementById('waiting_qr').style.display = 'none';
                         document.getElementById('pass_qr').style.display = 'block';
 
-                        document.getElementById('name').innerHTML = data.info[1][1];
+                        document.getElementById('name').innerHTML = data.info[1][1]+'[其他人员]';
                         document.getElementById('classes').innerHTML = data.info[1][3];
                         $('#student_id').val(data.info[1][0]);
                         document.getElementById('img').src = "/get_student_img/"+data.info[1][2];
@@ -228,7 +217,7 @@ $(document).on('click','#submit',function(){
         };
 
         $.ajax({
-            url: '{{url_for('user.send_leave_json',_external=True)}}',
+            url: '#',
             data: data,
             type: 'POST',
             success: function(data) {
