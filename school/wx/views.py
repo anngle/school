@@ -13,7 +13,7 @@ from .enum import commands
 
 import re
 
-blueprint = Blueprint('wx', __name__, url_prefix='/wechat')
+blueprint = Blueprint('wx', __name__, url_prefix='/wx')
 
 
 #关注公众号创建的菜单

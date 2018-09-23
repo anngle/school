@@ -97,7 +97,9 @@ class Student(SurrogatePK, Model):
 	parent外键家长表  默认空
 	classesd外键班级
 
-	ask_student外键请假表
+	ask_student外键请假表	
+	entry_exit 外键学生出入表
+
 	"""
 	__tablename__ = 'students'
 	number = Column(db.String(80),nullable=False)
@@ -115,7 +117,8 @@ class Student(SurrogatePK, Model):
 	classesd = reference_col('classesd')
 
 	ask_student = relationship('AskLeave', backref='ask_student',primaryjoin="Student.id == AskLeave.ask_users")
-    
+	entry_exit = relationship('StudentEntryExit', backref='student')
+  
     
 
 class StudentParent(SurrogatePK, Model):
@@ -137,6 +140,7 @@ class StudentParent(SurrogatePK, Model):
 	__tablename__ = 'student_parents'
 
 	student = relationship('Student', backref='parents')
+	
 
 	phone = Column(db.String(80))
 	name = Column(db.String(80))
@@ -175,7 +179,7 @@ class ChargeTeacher(SurrogatePK, Model):
 
 	user = reference_col('users')
 
-	classes_id = relationship('Classes', backref='teacher',lazy='dynamic')
+	student_entry_exit_id = relationship('Classes', backref='teacher',lazy='dynamic')
   
 
 class Doorkeeper(SurrogatePK, Model):
@@ -225,6 +229,48 @@ class AskLeave(SurrogatePK, Model):
 	charge_state = Column(db.Integer,default=0)
 	why = Column(db.UnicodeText)
 	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
+
+
+
+class StudentEntryExit(SurrogatePK,Model):
+	"""
+	学生出入表
+	表名：student_entry_exits
+	student_id 学生id 
+	state 状态 0出 1入
+	created_at 创建时间
+	"""
+
+	__tablename__ = 'student_entry_exits'
+
+	student_id = reference_col('students')
+
+	state = Column(db.Integer,default=0)
+	created_at = Column(db.DateTime, nullable=False, default=dt.datetime.now)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

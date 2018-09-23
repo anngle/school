@@ -118,30 +118,34 @@ function keyUp(e) {
    if(currKey!=13){
         document.getElementById('str').innerHTML += keyName;
    }else{
-        // alert(document.getElementById('str').innerHTML);
-        // return ;
+
         var date = new Date();
         var datetime = date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate()+' '+date.getHours()+':'+date.getMinutes()+':'+date.getSeconds()
 
         var str = document.getElementById('str').innerHTML;
         var msg = document.getElementById('msg');
 
-        
-
         document.getElementById('scan_qr').style.display = 'none';
         document.getElementById('waiting_qr').style.display = 'none';
         document.getElementById('pass_qr').style.display = 'none';
         document.getElementById('ok_scan_qr').style.display = 'block';
+
+        document.getElementById('waiting').innerHTML ='等待验证中。。。';
+        document.getElementById('pass').innerHTML ='已扫描待验证';
+                    
         setTimeout(function(){
 
             $.ajax({
-                url: "{{url_for('user.doorkeeper_main_json',_external=True)}}?s="+str,
+                url: "{{url_for('user.entry_and_exit_management_json',_external=True)}}?s="+str,
                 dataType: 'json',
                 jsonp: 'info', //回调函数的参数名(键值)key
                 // jsonpCallback: 'fun', //回调函数名(值) value
                 beforeSend:function(){
                     document.getElementById('ok_scan_qr').style.display = 'none';
                     document.getElementById('waiting_qr').style.display = 'block';
+
+
+                    
                 },
                 success:function(data){
                     // 没有请假信息
@@ -166,9 +170,9 @@ function keyUp(e) {
                         document.getElementById('scan_qr').style.display = 'block';
                         msg.innerHTML = '<h4>'+datetime+'   '+data.info[2]+'['+data.info[3]+']  '+data.info[1]+'</h4>'+msg.innerHTML;
 
-                        },1000)
+                        },500)
                     }
-                    // 错误
+                    // 错误或者ok？
                     if(data.info[0]==2){
                         document.getElementById('waiting_qr').style.display = 'none';
                         document.getElementById('ok_scan_qr').style.display = 'block';
@@ -180,9 +184,10 @@ function keyUp(e) {
 
                         msg.innerHTML = '<h4>'+datetime+'   已扫描,'+data.info[1]+' </h4>'+msg.innerHTML;
 
-                        },1000)
+                        },500)
                         
                     }
+
                     
 
                 },

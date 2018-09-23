@@ -23,13 +23,13 @@ flask学校请假系统
 2018
 ------------------------------------------------------------------
 roles表中name名称必须为：
- -Students
- -Doorkeeper
- -Patriarch
- -Teacher
- -Principal
- -ADMIN  
- -Others  
+ - Students     #学生
+ - Doorkeeper   #校警
+ - Patriarch    #家长
+ - Teacher      #教师，班主任
+ - Principal    #校管理员，暂停无作业用  2018-09
+ - ADMIN        #管理员
+ - Others       #其他人员
 
 用户的编号开头 ： 学生为学生表id，其他为current_user.id 
 

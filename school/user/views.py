@@ -678,7 +678,7 @@ def register_set_teacher():
 			msg_str = f'“{name}”老师(编号{number})已注册为“{classes[1]}”的班主任，同意请回复：“同意该教师{teacher.id}” 。'
 			wechat.message.send_text(classes[2],msg_str)
 		except Exception as e:
-			print(str(e))
+			pass
 		
 
 
@@ -787,8 +787,81 @@ def entry_and_exit_management():
 	if not current_user.is_authenticated:
 		return redirect(url_for('.user_login',next=request.endpoint))
 
-
-
 	return dict()
+
+
+
+@blueprint.route('/entry_and_exit_management_json')
+@csrf_protect.exempt
+@login_required
+def entry_and_exit_management_json():
+	"""
+	出入管理 json 信息提交
+
+	state：0离校  1归校
+
+
+	返回 状态。   2错误或者ok信息
+	"""
+	str_re = request.args.get('s')
+	code_str = str_re[:1]
+	body_str = str_re[1:]
+	if code_str != 'S':
+		return jsonify({'info':[2,'暂只支持学生出入操作。']})
+
+	student = Student.query.get(int(body_str))		
+	if not student:
+		return jsonify({'info':[2,'没有该学生。']})
+
+	entry_exit = StudentEntryExit.query.order_by(desc(StudentEntryExit.id)).filter_by(student_id=int(body_str)).first()	
+
+	if not entry_exit or entry_exit.state==1:
+		state = 0
+	else:
+		state = 1
+
+	StudentEntryExit.create(
+		student=student,
+		state=state
+	)
+
+	time = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+	try:
+
+		if state:
+			msg_title = f'尊敬的家长，您的小孩"{student.name}"于{time}已离开学校。'
+		else:
+			msg_title = f'尊敬的家长，您的小孩"{student.name}"于{time}已归来学校。'
+
+		wechat.message.send_text(student.parents.users.wechat_id,msg_title)
+	except Exception as e:
+		logger.error("出入校门学生端通知家长错误，微信通知错误"+str(e))
+
+	#注意这里状态 已经更改了 所以1离校 0归校
+	if state:
+		return_str = '学生"'+student.name+'"已离校'
+	else:
+		return_str = '学生"'+student.name+'"已归来'
+
+
+	return jsonify({'info':[2,return_str]})
+
+
+
+
+
+	
+	
+
+
+
+
+
+
+
+
+
 
 
